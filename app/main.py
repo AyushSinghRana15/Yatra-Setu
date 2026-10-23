@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import alerts, db, health
+from . import alerts, db, health, llm
 from .assistant import respond
 from .config import ADMIN_USERS, BASE_DIR
 from .forecast import forecaster
@@ -152,6 +152,12 @@ def model_metrics(shrine: str = "kedarnath"):
     return m
 
 
+@app.get("/api/ai/status")
+def ai_status():
+    """Which AI provider is active (never exposes secrets)."""
+    return llm.status()
+
+
 @app.get("/api/risk/network")
 def risk_network():
     return {"nodes": NODES, "segments": network_risk()}
@@ -278,6 +284,7 @@ def analytics(u=Depends(user)):
         "by_intent": by("intent"), "by_language": by("language"),
         "subscriptions": db.rows("SELECT COUNT(*) n FROM subscriptions")[0]["n"],
         "outbox": out, "pending_advisories": db.rows("SELECT COUNT(*) n FROM advisories WHERE status='pending'")[0]["n"],
+        "ai": llm.status(),
     }
 
 
