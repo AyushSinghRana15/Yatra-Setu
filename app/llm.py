@@ -137,8 +137,15 @@ def _chain_for(cfg: dict):
         "max_retries": 1,
         "default_headers": cfg.get("headers") or None,
     }
+    extra_body = {}
     if cfg.get("fallbacks"):
-        kwargs["extra_body"] = {"models": [cfg["model"], *cfg["fallbacks"]]}
+        extra_body["models"] = [cfg["model"], *cfg["fallbacks"]]
+    if cfg.get("provider") == "openrouter":
+        # Reasoning models (e.g. free :free endpoints) otherwise spend the whole
+        # token budget on hidden chain-of-thought and return an empty message.
+        extra_body["reasoning"] = {"exclude": True}
+    if extra_body:
+        kwargs["extra_body"] = extra_body
     model = ChatOpenAI(**kwargs)
     chain = prompt | model | StrOutputParser()
     _CHAINS[key] = chain

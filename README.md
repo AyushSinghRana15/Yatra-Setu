@@ -49,9 +49,12 @@ The generative layer is a LangChain **LCEL** chain:
 ChatPromptTemplate  →  ChatOpenAI(OpenRouter)  →  StrOutputParser
 ```
 
-Set `OPENROUTER_API_KEY` in `.env` (get one at <https://openrouter.ai/keys>) and optionally
-`OPENROUTER_MODEL` (default `openai/gpt-4o-mini`). OpenRouter's attribution headers
-(`HTTP-Referer`, `X-Title`) and a fallback-model list are supported.
+Set `OPENROUTER_API_KEY` in `.env` (get one at <https://openrouter.ai/keys>). The checked-in demo
+default is `recursive/flint-v1.0:free`, which works on a zero-credit account; switch to
+`openai/gpt-4o-mini` (or another model) when credits are available. Free reasoning models need
+`LLM_MAX_TOKENS=600` because hidden reasoning consumes the budget — the chain asks OpenRouter to
+exclude reasoning traces. OpenRouter's attribution headers (`HTTP-Referer`, `X-Title`) and a
+fallback-model list are supported.
 
 Safety and cost controls stay in front of and behind the model:
 

@@ -20,14 +20,14 @@ TOP_K = 3
 # --- AI provider: OpenRouter via LangChain (optional; offline extractive mode is the default) ---
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = os.getenv("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
-OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+OPENROUTER_MODEL = os.getenv("OPENROUTER_MODEL", "recursive/flint-v1.0:free")
 OPENROUTER_SITE_URL = os.getenv("OPENROUTER_SITE_URL", "http://127.0.0.1:8000")
 OPENROUTER_APP_NAME = os.getenv("OPENROUTER_APP_NAME", "YatraSetu AI")
 OPENROUTER_FALLBACK_MODELS = [
     m.strip() for m in os.getenv("OPENROUTER_FALLBACK_MODELS", "").split(",") if m.strip()
 ]
 LLM_TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.1"))
-LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "350"))
+LLM_MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "600"))
 LLM_TIMEOUT = float(os.getenv("LLM_TIMEOUT", "25"))
 
 # Legacy/self-hosted OpenAI-compatible endpoint (used only when OPENROUTER_API_KEY is unset)
