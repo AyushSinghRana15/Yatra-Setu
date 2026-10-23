@@ -45,22 +45,23 @@ python scripts/evaluate.py                 # rewrites docs/evaluation_results.js
 2. Put it in `.env`:
 
    ```dotenv
-   OPENROUTER_API_KEY=sk-or-v1-...
-   OPENROUTER_MODEL=openai/gpt-4o-mini
+   OPENROUTER_API_KEY=sk-or-v1-your-key
+   OPENROUTER_MODEL=recursive/flint-v1.0:free   # zero-credit demo model
+   LLM_MAX_TOKENS=600                          # free reasoning models need headroom
    # optional fallbacks:
-   OPENROUTER_FALLBACK_MODELS=google/gemini-2.5-flash,meta-llama/llama-3.3-70b-instruct
+   OPENROUTER_FALLBACK_MODELS=google/gemma-4-31b-it:free
    ```
 
 3. Restart `uvicorn`, then check <http://127.0.0.1:8000/api/ai/status>:
 
    ```json
    {"enabled": true, "provider": "openrouter", "framework": "LangChain",
-    "model": "openai/gpt-4o-mini", "mode": "llm-rag"}
+    "model": "recursive/flint-v1.0:free", "mode": "llm-rag"}
    ```
 
 4. Ask one question and confirm the details panel says **Answer mode: llm-rag**.
 
-If the key is missing, expired or out of credit, the app automatically returns to extractive mode. That is a feature — say so, don't apologise.
+A zero-credit key still works with a `:free` model. If the key is missing, expired, rate-limited or out of credit, the app automatically returns to extractive mode. That is a feature — say so, don't apologise.
 
 ---
 
