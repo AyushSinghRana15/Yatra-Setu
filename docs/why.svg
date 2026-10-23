@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Why YatraSetu is better than a traditional yatra website">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0e2a33"/><stop offset="1" stop-color="#2a6377"/>
+    </linearGradient>
+    <linearGradient id="ic" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#d9731e"/><stop offset="1" stop-color="#f2b450"/>
+    </linearGradient>
+    <style>
+      text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+      .h { font-size: 30px; font-weight: 800; fill: #fff; }
+      .sub { font-size: 15px; fill: rgba(255,255,255,.75); }
+      .t { font-size: 17px; font-weight: 700; fill: #fff; }
+      .old { font-size: 13px; fill: rgba(255,255,255,.6); }
+      .new { font-size: 13px; fill: #fff; }
+      .x { fill: #ff9b8f; font-weight: 700; font-size: 14px; }
+      .ok { fill: #8de0a8; font-weight: 700; font-size: 14px; }
+      .ico { font-size: 22px; }
+      .card { animation: f 6s ease-in-out infinite; }
+      .c2 { animation-duration: 7s; animation-delay: -1s; } .c3 { animation-duration: 6.5s; animation-delay: -2s; }
+      .c4 { animation-delay: -3s; } .c5 { animation-duration: 7s; animation-delay: -4s; } .c6 { animation-duration: 6.5s; animation-delay: -5s; }
+      @keyframes f { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+      @media (prefers-reduced-motion: reduce) { .card { animation: none; } }
+    </style>
+    <g id="cardbg">
+      <rect width="360" height="160" rx="20" fill="#ffffff" fill-opacity=".1" stroke="#ffffff" stroke-opacity=".25"/>
+      <rect x="20" y="20" width="44" height="44" rx="13" fill="url(#ic)"/>
+    </g>
+  </defs>
+  <rect width="1200" height="520" rx="24" fill="url(#bg)"/>
+  <text x="600" y="58" text-anchor="middle" class="h">Better than the traditional yatra website</text>
+  <text x="600" y="86" text-anchor="middle" class="sub">✕ what a static portal gives you   ·   ✓ what YatraSetu does instead</text>
+
+  <g transform="translate(30 120)"><g class="card"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">🎯</text><text x="78" y="48" class="t">Answers, not PDFs</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Scroll notices and PDFs for one detail</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">Plain-language answer with source + date</text></g></g>
+  <g transform="translate(420 140)"><g class="card c2"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">🗣️</text><text x="78" y="48" class="t">Speak your language</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Mostly English-only pages and forms</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">Hindi + English, typed or spoken, read aloud</text></g></g>
+  <g transform="translate(810 120)"><g class="card c3"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">📈</text><text x="78" y="48" class="t">Know the crowd first</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Discover the rush in the queue</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">7-day forecast vs. carrying capacity</text></g></g>
+  <g transform="translate(30 320)"><g class="card c4"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">🛣️</text><text x="78" y="48" class="t">One view of the road</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Weather, road, landslide news on many sites</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">Every segment scored and explained</text></g></g>
+  <g transform="translate(420 340)"><g class="card c5"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">🔔</text><text x="78" y="48" class="t">Alerts come to you</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Keep checking back for changes</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">WhatsApp alerts for your route, SMS fallback</text></g></g>
+  <g transform="translate(810 320)"><g class="card c6"><use href="#cardbg"/>
+    <text x="42" y="51" text-anchor="middle" class="ico">📶</text><text x="78" y="48" class="t">Works on weak networks</text>
+    <text x="22" y="98" class="x">✕</text><text x="42" y="98" class="old">Heavy pages that fail without signal</text>
+    <text x="22" y="128" class="ok">✓</text><text x="42" y="128" class="new">Offline PWA, emergency card, SOS</text></g></g>
+</svg>

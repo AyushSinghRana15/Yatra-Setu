@@ -3,67 +3,204 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0e2a33">
+  <meta name="description" content="YatraSetu AI – multilingual, voice-enabled safe-travel and crowd advisory assistant for the Char Dham and Hemkund Sahib yatra in Uttarakhand.">
   <title>YatraSetu AI – Safe Yatra Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
   <link rel="manifest" href="/static/manifest.json">
 </head>
-<body>
-<header class="top">
-  <div class="logo">YS</div>
-  <div><h1>YatraSetu AI</h1><p>Multilingual safe-travel &amp; crowd advisory assistant for Uttarakhand</p></div>
-  <div class="right">
-    <select id="lang" style="width:auto;padding:5px 8px">
-      <option value="">Auto language</option><option value="en">English</option><option value="hi">हिन्दी</option>
+<body class="site">
+
+<!-- ================= NAVBAR ================= -->
+<header class="nav" id="nav">
+  <a class="brand" href="#home" aria-label="YatraSetu AI home">
+    <span class="logo">YS</span>
+    <span class="brand-text"><b>YatraSetu</b><small>AI · उत्तराखंड यात्रा</small></span>
+  </a>
+  <nav class="nav-links" id="nav-links" aria-label="Main">
+    <a href="#home" data-page="home">🏠 Home</a>
+    <a href="#assistant" data-page="assistant">💬 Assistant</a>
+    <a href="#crowd" data-page="crowd">📊 Crowd</a>
+    <a href="#route" data-page="route">🛣️ Route risk</a>
+    <a href="#health" data-page="health">❤️ Health</a>
+    <a href="#alerts" data-page="alerts">🔔 Alerts</a>
+    <a href="#about" data-page="about">🧭 About</a>
+    <a href="/admin" class="only-mobile">🏛️ Officials' dashboard</a>
+  </nav>
+  <div class="nav-actions">
+    <select id="lang" class="lang" aria-label="Answer language" title="Answer & voice language">
+      <option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option>
     </select>
-    &nbsp; <a href="/admin">Officials' dashboard →</a>
+    <button class="icon-btn mic" id="nav-mic" title="Voice command" aria-label="Start voice command">🎙️</button>
+    <a class="sos-pill" href="#alerts" data-sos title="Emergency SOS">SOS</a>
+    <a class="officials only-desktop" href="/admin">Officials →</a>
+    <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
   </div>
 </header>
-<nav class="tabs">
-  <button data-tab="chat" class="active">💬 Assistant</button>
-  <button data-tab="crowd">📊 Crowd forecast</button>
-  <button data-tab="route">🛣️ Route risk</button>
-  <button data-tab="health">❤️ Health check</button>
-  <button data-tab="alerts">🔔 Trip alerts &amp; SOS</button>
-</nav>
-<main>
-  <!-- Assistant -->
-  <section class="tab active" id="tab-chat">
-    <div class="grid g2">
-      <div class="card">
-        <h2>Ask YatraSetu</h2>
-        <div class="chat" id="chat"></div>
-        <div class="quick" id="quick"></div>
-        <div class="chatbar">
-          <input id="q" placeholder="Ask in English or हिन्दी, e.g. Is Kedarnath crowded this week?">
-          <button class="btn" id="send">Send</button>
-        </div>
+
+<main class="site-main" id="pages">
+
+<!-- ================= HOME ================= -->
+<section class="page" id="page-home" data-title="Home">
+  <div class="hero bg-kedarnath">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow reveal">🙏 Char Dham · Hemkund Sahib · 2026 season</span>
+        <h1 class="reveal">Your safe bridge to the <span class="grad">Himalayan yatra</span></h1>
+        <p class="lead reveal">Ask about crowds, roads, weather, health and registration in English or हिन्दी, by typing or speaking.
+          Every answer comes from official content and live data.</p>
+        <form class="hero-ask reveal" id="hero-ask">
+          <input id="hero-q" placeholder="Try: “Is the road to Kedarnath open?”" aria-label="Ask YatraSetu">
+          <button type="button" class="icon-btn mic" id="hero-mic" title="Ask by voice" aria-label="Ask by voice">🎙️</button>
+          <button class="btn saff" type="submit">Ask →</button>
+        </form>
+        <div class="hero-chips reveal" id="hero-chips"></div>
       </div>
-      <div class="card">
-        <h2>How answers are produced</h2>
-        <div id="ai-status" class="notice">Checking AI provider…</div>
-        <p class="muted">Every answer is <b>grounded</b> in approved official content or live data, with the source and
-          last-updated date shown. Emergencies bypass the AI model and return safety instructions immediately.</p>
-        <h3>Pipeline</h3>
-        <ol class="muted" style="line-height:1.8;padding-left:18px">
-          <li>Language detection (script-based) – Bhashini for other Indian languages</li>
-          <li>Intent classification (TF-IDF + logistic regression) with emergency override</li>
-          <li>Hybrid retrieval over the bilingual knowledge base</li>
-          <li>Live enrichment: crowd forecast &amp; route-risk services</li>
-          <li>Grounded answer (LLM if configured, else extractive) + guardrails</li>
-        </ol>
-        <h3>Last response details</h3>
-        <div id="details" class="muted">Ask a question to see intent, confidence and sources.</div>
+      <div class="hero-float" aria-hidden="true">
+        <div class="glass float f1"><span>🟢</span><div><b>Live route risk</b><small>IMD + road status + terrain</small></div></div>
+        <div class="glass float f2"><span>📈</span><div><b>7-day crowd forecast</b><small>vs. carrying capacity</small></div></div>
+        <div class="glass float f3"><span>🗣️</span><div><b>बोलकर पूछें</b><small>Voice in Hindi &amp; English</small></div></div>
       </div>
     </div>
-  </section>
+    <a class="scroll-cue" href="#why-anchor" aria-label="Scroll down">⌄</a>
+    <svg class="ridge" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 120 L0 70 L120 40 L210 75 L330 20 L450 80 L560 45 L690 90 L800 30 L930 70 L1040 35 L1170 85 L1290 50 L1440 80 L1440 120 Z"/>
+    </svg>
+  </div>
 
-  <!-- Crowd -->
-  <section class="tab" id="tab-crowd">
+  <!-- Why better than traditional websites: floating cards -->
+  <div class="why bg-panorama" id="why-anchor">
+    <div class="wrap">
+      <div class="section-head light reveal">
+        <span class="eyebrow">Why YatraSetu?</span>
+        <h2>Better than the traditional yatra website</h2>
+        <p>Traditional portals publish static notices and PDFs. YatraSetu turns them into live, personal answers. Hover or tap a card.</p>
+      </div>
+      <div class="why-grid" id="why-grid"></div>
+    </div>
+  </div>
+
+  <!-- Live shrine status -->
+  <div class="wrap block">
+    <div class="section-head reveal">
+      <span class="eyebrow">Live today</span>
+      <h2>Shrine status at a glance</h2>
+      <p>Today's crowd band and the riskiest stretch on each route, refreshed from the forecast and route-risk services.</p>
+    </div>
+    <div class="shrine-grid" id="shrine-grid">
+      <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
+    </div>
+  </div>
+
+  <!-- Feature tiles -->
+  <div class="wrap block">
+    <div class="section-head reveal">
+      <span class="eyebrow">Everything in one place</span>
+      <h2>Plan, check and stay safe</h2>
+    </div>
+    <div class="feature-grid">
+      <a class="feature reveal" href="#assistant"><span class="fi">💬</span><h3>Multilingual assistant</h3><p>Grounded answers with sources and dates. Voice in and out.</p><span class="go">Open →</span></a>
+      <a class="feature reveal" href="#crowd"><span class="fi">📊</span><h3>Crowd forecast</h3><p>7 days ahead, lighter dates and alternative shrines.</p><span class="go">Open →</span></a>
+      <a class="feature reveal" href="#route"><span class="fi">🛣️</span><h3>Route risk map</h3><p>Every segment scored and explained, with a safe-halt suggestion.</p><span class="go">Open →</span></a>
+      <a class="feature reveal" href="#health"><span class="fi">❤️</span><h3>Health readiness</h3><p>High-altitude self-check, screening points and medical posts.</p><span class="go">Open →</span></a>
+      <a class="feature reveal" href="#alerts"><span class="fi">🔔</span><h3>Trip alerts</h3><p>WhatsApp alerts for your route, with SMS fallback.</p><span class="go">Open →</span></a>
+      <a class="feature reveal" href="#alerts" data-sos><span class="fi">🚨</span><h3>SOS</h3><p>Nearest medical help, a 112 dialler and location sharing.</p><span class="go">Open →</span></a>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-band">
+    <div class="wrap stats">
+      <div class="stat reveal"><b data-count="95">0</b><span>% top-3 retrieval accuracy</span></div>
+      <div class="stat reveal"><b data-count="100">0</b><span>% emergency recall</span></div>
+      <div class="stat reveal"><b data-count="80.3" data-dec="1">0</b><span>% crowd-band accuracy</span></div>
+      <div class="stat reveal"><b data-count="5">0</b><span>shrines · 2 languages</span></div>
+    </div>
+  </div>
+
+  <div class="wrap block">
+    <div class="emergency reveal">
+      <div><h3>🚑 Emergency numbers</h3><p>These stay available offline once the app has been opened.</p></div>
+      <div class="em-nums">
+        <a href="tel:112"><b>112</b><span>Emergency</span></a>
+        <a href="tel:108"><b>108</b><span>Ambulance</span></a>
+        <a href="tel:1930"><b>1930</b><span>Cyber fraud</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ASSISTANT ================= -->
+<section class="page" id="page-assistant" data-title="Assistant">
+  <div class="banner bg-chaukhamba">
+    <div class="wrap"><span class="crumb">Home / Assistant</span><h1>Ask YatraSetu</h1>
+      <p>Type, tap a suggestion or speak. Answers come from official content and live data, and the sources are shown.</p></div>
+  </div>
+  <div class="wrap lift">
+    <div class="grid g2">
+      <div class="card chat-card">
+        <div class="chat-head">
+          <div class="bot-id"><span class="avatar">🙏</span><div><b>YatraSetu</b><small id="ai-mode">checking AI mode…</small></div></div>
+          <div class="chat-tools">
+            <label class="toggle" title="Read replies aloud"><input type="checkbox" id="auto-speak"><span></span>🔊 Auto-read</label>
+            <button class="btn ghost sm" id="clear-chat" title="Clear conversation">🗑️ Clear</button>
+          </div>
+        </div>
+        <div class="chat" id="chat" aria-live="polite"></div>
+        <div class="quick" id="quick"></div>
+        <form class="chatbar" id="chatbar">
+          <button type="button" class="icon-btn mic big" id="chat-mic" title="Speak your question" aria-label="Speak your question">🎙️</button>
+          <input id="q" autocomplete="off" placeholder="Ask in English or हिन्दी, e.g. Is Kedarnath crowded this week?  (press / to focus)">
+          <button class="btn" id="send" type="submit">Send ➤</button>
+        </form>
+        <div id="voice-note" class="voice-note" hidden></div>
+      </div>
+      <div class="side-stack">
+        <div class="card">
+          <h2>🎙️ Voice commands</h2>
+          <p class="muted">Tap a 🎙️ button and speak. If what you say is not a command, it is sent to the assistant as a question.</p>
+          <div class="cmd-list">
+            <div><kbd>“Open crowd forecast for Badrinath”</kbd><span>opens the forecast for that shrine</span></div>
+            <div><kbd>“Check route to Kedarnath”</kbd><span>scores the route</span></div>
+            <div><kbd>“Go to health check”</kbd> <kbd>“Show about”</kbd><span>navigates</span></div>
+            <div><kbd>“SOS” / “Emergency” / “बचाओ”</kbd><span>opens SOS (you still press the button)</span></div>
+            <div><kbd>“Read answer” / “पढ़ो”</kbd> <kbd>“Stop” / “रुको”</kbd><span>speech playback</span></div>
+            <div><kbd>“भीड़ दिखाओ”</kbd> <kbd>“रास्ता दिखाओ”</kbd><span>Hindi navigation</span></div>
+          </div>
+          <div class="notice small" id="voice-support"></div>
+        </div>
+        <div class="card">
+          <h2>How this answer was made</h2>
+          <div id="ai-status" class="notice small">Checking AI provider…</div>
+          <ol class="pipeline-mini" id="pipe-mini">
+            <li data-step="lang">Language detection</li>
+            <li data-step="intent">Intent + emergency check</li>
+            <li data-step="retrieve">Hybrid retrieval (RAG)</li>
+            <li data-step="live">Live crowd / route data</li>
+            <li data-step="answer">Grounded answer + guardrails</li>
+          </ol>
+          <div id="details" class="muted">Ask a question to see the intent, confidence and sources.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CROWD ================= -->
+<section class="page" id="page-crowd" data-title="Crowd forecast">
+  <div class="banner bg-badrinath">
+    <div class="wrap"><span class="crumb">Home / Crowd forecast</span><h1>7-day crowd forecast</h1>
+      <p>Expected visitors compared with the shrine's daily carrying capacity, so you can pick a lighter day.</p></div>
+  </div>
+  <div class="wrap lift">
     <div class="card">
-      <h2>7-day crowd forecast vs. carrying capacity</h2>
+      <div class="shrine-pills" id="c-pills" role="tablist" aria-label="Shrine"></div>
       <div class="row">
-        <div><label>Shrine</label><select id="c-shrine"></select></div>
-        <div><label>Start date</label><input type="date" id="c-date"></div>
+        <div><label for="c-shrine">Shrine</label><select id="c-shrine"></select></div>
+        <div><label for="c-date">Start date</label><input type="date" id="c-date"></div>
         <div style="flex:0"><button class="btn" id="c-go">Forecast</button></div>
       </div>
       <div class="daycards" id="c-days"></div>
@@ -72,94 +209,323 @@
       <p class="muted">Bands: Low &lt; 60% of capacity · Moderate 60–85% · High 85–100% · Over capacity &gt; 100%.
         Capacity values from the 2025 carrying-capacity study. Model: gradient-boosted trees trained on past seasons.</p>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Route -->
-  <section class="tab" id="tab-route">
+<!-- ================= ROUTE ================= -->
+<section class="page" id="page-route" data-title="Route risk">
+  <div class="banner bg-chandrashila">
+    <div class="wrap"><span class="crumb">Home / Route risk</span><h1>Live route-risk map</h1>
+      <p>Each segment is scored from IMD alerts, forecast rain, official road status and terrain.</p></div>
+  </div>
+  <div class="wrap lift">
     <div class="grid g2">
       <div class="card">
-        <h2>Live route-risk map</h2>
-        <svg id="map" style="width:100%;height:auto"></svg>
-        <p class="muted">Hover a segment to see why it has that risk level. Scores combine IMD alerts, forecast rain,
-          official road status and terrain susceptibility.</p>
+        <h2>Route network</h2>
+        <div class="map-wrap"><svg id="map" style="width:100%;height:auto"></svg></div>
+        <p class="muted">Hover or tap a segment to see why it has that risk level.</p>
       </div>
       <div class="card">
         <h2>Check my route</h2>
-        <label>Destination</label><select id="r-shrine"></select>
+        <label for="r-shrine">Destination</label><select id="r-shrine"></select>
         <div style="margin-top:10px"><button class="btn" id="r-go">Check route</button></div>
         <div id="r-out"></div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Health -->
-  <section class="tab" id="tab-health">
+<!-- ================= HEALTH ================= -->
+<section class="page" id="page-health" data-title="Health check">
+  <div class="banner bg-flowers">
+    <div class="wrap"><span class="crumb">Home / Health check</span><h1>Pre-trip health readiness</h1>
+      <p>Kedarnath is at 3,583 m and Hemkund Sahib at 4,632 m. Check you are ready before you climb.</p></div>
+  </div>
+  <div class="wrap lift">
     <div class="grid g2">
-      <div class="card">
-        <h2>Pre-trip health readiness self-check</h2>
+      <div class="card" id="health-form">
+        <h2>Self-check</h2>
         <div class="row">
-          <div><label>Age</label><input type="number" id="h-age" value="62" min="1" max="110"></div>
-          <div><label>Destination</label><select id="h-shrine"></select></div>
-          <div><label>Walking fitness</label><select id="h-fit"><option value="high">Can walk 10 km easily</option>
+          <div><label for="h-age">Age</label><input type="number" id="h-age" value="62" min="1" max="110"></div>
+          <div><label for="h-shrine">Destination</label><select id="h-shrine"></select></div>
+          <div><label for="h-fit">Walking fitness</label><select id="h-fit"><option value="high">Can walk 10 km easily</option>
             <option value="medium" selected>Can walk 5 km</option><option value="low">Struggle to walk 5 km</option></select></div>
         </div>
         <label>Known conditions</label>
-        <div class="check"><input type="checkbox" value="bp" checked> High blood pressure</div>
-        <div class="check"><input type="checkbox" value="diabetes"> Diabetes</div>
-        <div class="check"><input type="checkbox" value="heart"> Heart disease</div>
-        <div class="check"><input type="checkbox" value="asthma"> Asthma / lung disease</div>
-        <div class="check"><input type="checkbox" value="pregnancy"> Pregnancy</div>
+        <div class="check-grid">
+          <label class="check"><input type="checkbox" value="bp" checked> High blood pressure</label>
+          <label class="check"><input type="checkbox" value="diabetes"> Diabetes</label>
+          <label class="check"><input type="checkbox" value="heart"> Heart disease</label>
+          <label class="check"><input type="checkbox" value="asthma"> Asthma / lung disease</label>
+          <label class="check"><input type="checkbox" value="pregnancy"> Pregnancy</label>
+        </div>
         <label>Right now, do you have…</label>
-        <div class="check"><input type="checkbox" class="rf" value="chest_pain"> Chest pain or pressure</div>
-        <div class="check"><input type="checkbox" class="rf" value="breathless_rest"> Breathlessness at rest</div>
-        <div class="check"><input type="checkbox" class="rf" value="recent_surgery"> Surgery / heart attack in last 6 months</div>
-        <div style="margin-top:12px"><button class="btn saff" id="h-go">Check readiness</button></div>
+        <div class="check-grid">
+          <label class="check"><input type="checkbox" class="rf" value="chest_pain"> Chest pain or pressure</label>
+          <label class="check"><input type="checkbox" class="rf" value="breathless_rest"> Breathlessness at rest</label>
+          <label class="check"><input type="checkbox" class="rf" value="recent_surgery"> Surgery / heart attack in last 6 months</label>
+        </div>
+        <div style="margin-top:14px"><button class="btn saff" id="h-go">Check readiness</button></div>
       </div>
       <div class="card"><h2>Your readiness plan</h2><div id="h-out" class="muted">Fill in the form to get guidance.</div></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Alerts & SOS -->
-  <section class="tab" id="tab-alerts">
+<!-- ================= ALERTS & SOS ================= -->
+<section class="page" id="page-alerts" data-title="Trip alerts & SOS">
+  <div class="banner bg-yamunotri">
+    <div class="wrap"><span class="crumb">Home / Trip alerts &amp; SOS</span><h1>Trip alerts &amp; SOS</h1>
+      <p>Get WhatsApp alerts for your route and reach help quickly if something goes wrong.</p></div>
+  </div>
+  <div class="wrap lift">
     <div class="grid g2">
       <div class="card">
         <h2>Subscribe my trip for alerts</h2>
         <div class="row">
-          <div><label>Mobile (WhatsApp)</label><input id="s-phone" value="9876543210"></div>
-          <div><label>Alert language</label><select id="s-lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
+          <div><label for="s-phone">Mobile (WhatsApp)</label><input id="s-phone" value="9876543210"></div>
+          <div><label for="s-lang">Alert language</label><select id="s-lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
         </div>
         <div class="row">
-          <div><label>Destination</label><select id="s-shrine"></select></div>
-          <div><label>Group size</label><input type="number" id="s-group" value="4"></div>
+          <div><label for="s-shrine">Destination</label><select id="s-shrine"></select></div>
+          <div><label for="s-group">Group size</label><input type="number" id="s-group" value="4"></div>
         </div>
         <div class="row">
-          <div><label>From</label><input type="date" id="s-from"></div>
-          <div><label>To</label><input type="date" id="s-to"></div>
+          <div><label for="s-from">From</label><input type="date" id="s-from"></div>
+          <div><label for="s-to">To</label><input type="date" id="s-to"></div>
         </div>
-        <div class="check" style="margin-top:10px"><input type="checkbox" id="s-consent"> I agree that YatraSetu stores my trip
-          details only to send safety alerts, and deletes them 90 days after the trip.</div>
+        <label class="check" style="margin-top:12px"><input type="checkbox" id="s-consent"> I agree that YatraSetu stores my trip
+          details only to send safety alerts, and deletes them 90 days after the trip.</label>
         <div style="margin-top:10px"><button class="btn" id="s-go">Subscribe</button></div>
         <div id="s-out"></div>
       </div>
-      <div class="card">
-        <h2>Emergency SOS</h2>
-        <p class="muted">Shares your location with family and opens the 112 dialler. Works with the location of your phone.</p>
+      <div class="card sos-card" id="sos-card">
+        <h2>🚨 Emergency SOS</h2>
+        <p class="muted">Finds the nearest medical help, opens the 112 dialler and prepares a location message for your family.</p>
         <div class="row">
-          <div><label>Latitude</label><input id="sos-lat" value="30.6600"></div>
-          <div><label>Longitude</label><input id="sos-lon" value="79.0300"></div>
+          <div><label for="sos-lat">Latitude</label><input id="sos-lat" value="30.6600"></div>
+          <div><label for="sos-lon">Longitude</label><input id="sos-lon" value="79.0300"></div>
+          <div style="flex:0"><button class="btn ghost" id="sos-locate" title="Use my phone's location">📍 Locate me</button></div>
         </div>
-        <label>Emergency contact</label><input id="sos-contact" value="+919812345678">
-        <div style="margin-top:12px"><button class="btn red" id="sos-go">🚨 SOS</button></div>
+        <label for="sos-contact">Emergency contact</label><input id="sos-contact" value="+919812345678">
+        <div style="margin-top:12px"><button class="btn red big-sos" id="sos-go">🚨 SOS</button></div>
         <div id="sos-out"></div>
         <h3>Offline emergency card</h3>
-        <div class="notice">Emergency 112 · Ambulance 108 · Cyber fraud 1930 · Save this page to your home screen: the card
-          stays available without network.</div>
+        <div class="notice">Emergency 112 · Ambulance 108 · Cyber fraud 1930. Add this site to your home screen and the card
+          stays available without a network.</div>
       </div>
     </div>
-  </section>
-  <div class="footer">YatraSetu AI prototype · Minor Project, Department of CSE, Roorkee Institute of Technology · Demo data, verify with official sources</div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="page" id="page-about" data-title="About">
+  <div class="banner bg-hemkund">
+    <div class="wrap"><span class="crumb">Home / About</span><h1>About YatraSetu AI</h1>
+      <p>A minor project (B.Tech CSE, AI/ML) at Roorkee Institute of Technology. <i>Setu</i> means bridge: it connects pilgrims with verified safety information in their own language.</p></div>
+  </div>
+  <div class="wrap lift">
+
+    <div class="card">
+      <div class="section-head compact">
+        <span class="eyebrow">System architecture</span>
+        <h2>How the pieces fit together</h2>
+        <p>Click any block to see what it does and which file implements it. Arrows show the request flowing down and the answer flowing back.</p>
+      </div>
+      <div class="arch" id="arch">
+        <div class="layer" data-layer="Users">
+          <span class="layer-tag">Users</span>
+          <button class="node user" data-node="pilgrim">🧑‍🦳<b>Pilgrims</b><small>web · PWA</small></button>
+          <button class="node user" data-node="wa-user">💬<b>Pilgrims</b><small>WhatsApp</small></button>
+          <button class="node user" data-node="official">🏛️<b>District officials</b><small>control room</small></button>
+        </div>
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="layer" data-layer="Channels">
+          <span class="layer-tag">Channels</span>
+          <button class="node chan" data-node="pwa" data-file="static/index.html">📱<b>Traveller PWA</b><small>index.html · app.js · voice.js</small></button>
+          <button class="node chan" data-node="webhook" data-file="main.py">🔗<b>WhatsApp webhook</b><small>/webhook/whatsapp</small></button>
+          <button class="node chan" data-node="admin" data-file="static/admin.html">📋<b>Officials' dashboard</b><small>admin.html · admin.js</small></button>
+        </div>
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="layer" data-layer="Gateway">
+          <span class="layer-tag">Gateway</span>
+          <button class="node gate wide" data-node="gateway" data-file="main.py">⚡<b>FastAPI gateway</b><small>app/main.py · REST API · login &amp; roles · static pages</small></button>
+        </div>
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="layer" data-layer="Services">
+          <span class="layer-tag">Services</span>
+          <button class="node svc" data-node="assistant" data-file="assistant.py">🤖<b>Assistant</b><small>assistant.py</small></button>
+          <button class="node svc" data-node="forecast" data-file="forecast.py">📊<b>Crowd forecast</b><small>forecast.py</small></button>
+          <button class="node svc" data-node="risk" data-file="risk.py">🛣️<b>Route risk</b><small>risk.py</small></button>
+          <button class="node svc" data-node="health" data-file="health.py">❤️<b>Health rules</b><small>health.py</small></button>
+          <button class="node svc" data-node="alerts" data-file="alerts.py">🔔<b>Alerts &amp; advisories</b><small>alerts.py</small></button>
+        </div>
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="layer ai" data-layer="AI core">
+          <span class="layer-tag">AI core</span>
+          <button class="node ai" data-node="language" data-file="language.py">🌐<b>Language</b><small>language.py</small></button>
+          <button class="node ai" data-node="intent" data-file="intent.py">🎯<b>Intent</b><small>intent.py</small></button>
+          <button class="node ai" data-node="kb" data-file="knowledge_base.py">📚<b>Retriever</b><small>knowledge_base.py</small></button>
+          <button class="node ai" data-node="llm" data-file="llm.py">🧠<b>LLM + guardrails</b><small>llm.py</small></button>
+        </div>
+        <div class="flow" aria-hidden="true"><i></i><i></i><i></i></div>
+        <div class="layer split">
+          <div class="group">
+            <span class="layer-tag">Data</span>
+            <button class="node data" data-node="sqlite" data-file="db.py">🗄️<b>SQLite</b><small>db.py</small></button>
+            <button class="node data" data-node="kbjson" data-file="data/knowledge_base.json">📄<b>Knowledge base</b><small>knowledge_base.json</small></button>
+            <button class="node data" data-node="geo" data-file="data/routes.json">🗺️<b>Shrines &amp; routes</b><small>shrines.json · routes.json</small></button>
+            <button class="node data" data-node="history" data-file="data/footfall_history.csv">📈<b>Footfall history</b><small>footfall_history.csv</small></button>
+          </div>
+          <div class="group ext">
+            <span class="layer-tag">External</span>
+            <button class="node ext" data-node="openrouter">☁️<b>OpenRouter</b><small>via LangChain</small></button>
+            <button class="node ext" data-node="bhashini">🗣️<b>Bhashini</b><small>Indian languages</small></button>
+            <button class="node ext" data-node="whatsapp">📨<b>WhatsApp / SMS</b><small>alert delivery</small></button>
+            <button class="node ext" data-node="speech">🎙️<b>Web Speech API</b><small>browser voice</small></button>
+          </div>
+        </div>
+      </div>
+      <div class="node-detail" id="node-detail"><b>Tip:</b> click a block above.</div>
+    </div>
+
+    <div class="grid g2 about-grid">
+      <div class="card">
+        <div class="section-head compact">
+          <span class="eyebrow">Assistant pipeline</span>
+          <h2>From question to grounded answer</h2>
+        </div>
+        <div class="pipeline" id="pipeline">
+          <div class="pstep" data-i="0"><span>🎙️</span><b>Input</b><small>Text or voice (Web Speech API)</small></div>
+          <div class="pstep" data-i="1"><span>🌐</span><b>Language</b><small>Script detection, Bhashini for other languages</small></div>
+          <div class="pstep" data-i="2"><span>🎯</span><b>Intent</b><small>TF-IDF + logistic regression. Emergencies are routed to a fixed safety reply.</small></div>
+          <div class="pstep" data-i="3"><span>📚</span><b>Retrieve</b><small>Hybrid TF-IDF over the bilingual knowledge base, re-ranked by shrine</small></div>
+          <div class="pstep" data-i="4"><span>📡</span><b>Live data</b><small>Crowd forecast and route risk</small></div>
+          <div class="pstep" data-i="5"><span>🧠</span><b>Answer</b><small>OpenRouter LLM via LangChain, or extractive. Numbers checked, PII redacted.</small></div>
+          <div class="pstep" data-i="6"><span>🔊</span><b>Reply</b><small>Text with sources, read aloud on request</small></div>
+        </div>
+        <button class="btn ghost" id="play-pipe">▶ Play the flow</button>
+      </div>
+
+      <div class="card">
+        <div class="section-head compact">
+          <span class="eyebrow">Project structure</span>
+          <h2>Repository map</h2>
+          <p>Hover a file to highlight its block in the diagram.</p>
+        </div>
+        <div class="tree" id="tree">
+          <details open><summary>📁 YatraSetu-AI/</summary>
+            <details open><summary>📁 app/ <em>backend + web app</em></summary>
+              <div class="leaf" data-file="main.py">🐍 main.py <em>FastAPI app, REST API, webhook</em></div>
+              <div class="leaf" data-file="assistant.py">🐍 assistant.py <em>conversation orchestrator</em></div>
+              <div class="leaf" data-file="knowledge_base.py">🐍 knowledge_base.py <em>bilingual KB + retriever</em></div>
+              <div class="leaf" data-file="intent.py">🐍 intent.py <em>intent model, emergency override</em></div>
+              <div class="leaf" data-file="language.py">🐍 language.py <em>language detection, Bhashini</em></div>
+              <div class="leaf" data-file="llm.py">🐍 llm.py <em>LangChain + OpenRouter, guardrails</em></div>
+              <div class="leaf" data-file="forecast.py">🐍 forecast.py <em>crowd forecasting model</em></div>
+              <div class="leaf" data-file="risk.py">🐍 risk.py <em>route-risk scoring, safe halts</em></div>
+              <div class="leaf" data-file="health.py">🐍 health.py <em>health-readiness rules</em></div>
+              <div class="leaf" data-file="alerts.py">🐍 alerts.py <em>subscriptions, advisories, dispatch</em></div>
+              <div class="leaf" data-file="db.py">🐍 db.py · config.py <em>SQLite + settings</em></div>
+              <details><summary>📁 data/</summary>
+                <div class="leaf" data-file="data/knowledge_base.json">🧾 knowledge_base.json</div>
+                <div class="leaf" data-file="data/routes.json">🧾 shrines.json · routes.json</div>
+                <div class="leaf" data-file="data/footfall_history.csv">📈 footfall_history.csv</div>
+              </details>
+              <details><summary>📁 static/ <em>front-end</em></summary>
+                <div class="leaf" data-file="static/index.html">🌐 index.html · style.css <em>traveller site</em></div>
+                <div class="leaf" data-file="static/index.html">⚙️ app.js · voice.js · charts.js</div>
+                <div class="leaf" data-file="static/admin.html">🏛️ admin.html · admin.js <em>dashboard</em></div>
+                <div class="leaf">📦 sw.js · manifest.json <em>offline PWA</em></div>
+              </details>
+            </details>
+            <details><summary>📁 scripts/ <em>data, seeding, evaluation</em></summary>
+              <div class="leaf">🐍 generate_data.py · seed_demo.py · evaluate.py · make_demo_deck.py</div>
+            </details>
+            <details><summary>📁 tests/ <em>pytest + gold set</em></summary>
+              <div class="leaf">🧪 test_core.py · gold_set.json</div>
+            </details>
+            <details><summary>📁 docs/ · presentation/ · report/</summary>
+              <div class="leaf">🖼️ diagrams, screenshots, evaluation results, demo script, decks, project report</div>
+            </details>
+          </details>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g3 about-grid">
+      <div class="card">
+        <h2>🧰 Tech stack</h2>
+        <div class="chips">
+          <span>FastAPI</span><span>Python 3</span><span>scikit-learn</span><span>pandas</span><span>LangChain (LCEL)</span>
+          <span>OpenRouter</span><span>SQLite</span><span>Bhashini</span><span>Web Speech API</span><span>PWA · Service worker</span>
+          <span>Vanilla JS · no framework</span><span>Canvas &amp; SVG charts</span>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📏 Evaluation</h2>
+        <table class="t compact">
+          <tr><td>Retrieval top-1 / top-3</td><td><b>87.5% / 95.0%</b></td></tr>
+          <tr><td>Intent accuracy</td><td><b>85.0%</b></td></tr>
+          <tr><td>Emergency recall</td><td><b>100%</b></td></tr>
+          <tr><td>Forecast MAPE (normal days)</td><td><b>13.3%</b></td></tr>
+          <tr><td>Crowd-band accuracy</td><td><b>80.3%</b></td></tr>
+        </table>
+        <p class="muted">From <code>docs/evaluation_results.json</code>.</p>
+      </div>
+      <div class="card">
+        <h2>🎙️ Voice: current limits</h2>
+        <ul class="muted tight">
+          <li>Voice input uses the browser's Web Speech API. It works in Chrome, Edge and Safari, not in Firefox.</li>
+          <li>It needs microphone permission and <code>localhost</code> or HTTPS.</li>
+          <li>Chrome sends audio to its own cloud speech service, so it does not work offline.</li>
+          <li>English (en-IN) and Hindi (hi-IN) only. Garhwali, Kumaoni and other languages are planned through Bhashini speech recognition.</li>
+          <li>Read-aloud uses the voices installed on the device. Some devices have no Hindi voice.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card credits">
+      <h2>📷 Image credits</h2>
+      <p class="muted">Backgrounds are openly licensed photographs from Wikimedia Commons, used under their licences:</p>
+      <ul id="credits"></ul>
+      <p class="muted">Project: Ayush Singh (Roll No. 230240170024), Department of CSE, Roorkee Institute of Technology. Prototype with demo data; verify with official sources.</p>
+    </div>
+  </div>
+</section>
+
 </main>
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div><b>YatraSetu AI</b><p>Multilingual, voice-enabled safe-travel and crowd advisory assistant for Uttarakhand.</p></div>
+    <div><b>Explore</b><a href="#assistant">Assistant</a><a href="#crowd">Crowd forecast</a><a href="#route">Route risk</a><a href="#about">About</a></div>
+    <div><b>Emergency</b><a href="tel:112">112 Emergency</a><a href="tel:108">108 Ambulance</a><a href="tel:1930">1930 Cyber fraud</a></div>
+  </div>
+  <p class="fine">Prototype · Minor Project, Department of CSE, Roorkee Institute of Technology · Demo data, verify with official sources · Photos: Wikimedia Commons (see About)</p>
+</footer>
+
+<!-- floating action buttons -->
+<div class="fab-group">
+  <button class="fab mic" id="fab-mic" title="Voice command" aria-label="Voice command">🎙️</button>
+  <a class="fab" href="#assistant" id="fab-chat" title="Ask YatraSetu" aria-label="Ask YatraSetu">💬</a>
+</div>
+
+<!-- voice overlay -->
+<div class="voice-overlay" id="voice-overlay" hidden>
+  <div class="voice-sheet" role="dialog" aria-label="Listening">
+    <div class="wave"><i></i><i></i><i></i><i></i><i></i></div>
+    <h3 id="vo-title">Listening…</h3>
+    <p id="vo-text" class="vo-text">Speak now</p>
+    <p class="muted" id="vo-hint">Try “Is Kedarnath crowded this week?” or “Open route risk”</p>
+    <button class="btn ghost" id="vo-cancel">Cancel</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script src="/static/charts.js"></script>
 <script src="/static/app.js"></script>
+<script src="/static/voice.js"></script>
 </body>
 </html>
