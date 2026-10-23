@@ -1,0 +1,456 @@
+{
+ "_note": "Schematic route network for the prototype. Distances are approximate; slope class and landslide-history counts are illustrative planning values, not survey data. Coordinates are approximate town-centre locations.",
+ "nodes": {
+  "rishikesh": {
+   "name": "Rishikesh",
+   "x": 60,
+   "y": 430,
+   "facilities": [
+    "stay",
+    "hospital",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.0869,
+   "lon": 78.2676
+  },
+  "devprayag": {
+   "name": "Devprayag",
+   "x": 170,
+   "y": 380,
+   "facilities": [
+    "stay",
+    "medical",
+    "fuel"
+   ],
+   "lat": 30.146,
+   "lon": 78.5988
+  },
+  "srinagar": {
+   "name": "Srinagar (Garhwal)",
+   "x": 280,
+   "y": 340,
+   "facilities": [
+    "stay",
+    "hospital",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.223,
+   "lon": 78.783
+  },
+  "rudraprayag": {
+   "name": "Rudraprayag",
+   "x": 390,
+   "y": 300,
+   "facilities": [
+    "stay",
+    "hospital",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.284,
+   "lon": 78.9811
+  },
+  "guptkashi": {
+   "name": "Guptkashi",
+   "x": 470,
+   "y": 210,
+   "facilities": [
+    "stay",
+    "medical",
+    "fuel"
+   ],
+   "lat": 30.5246,
+   "lon": 79.0789
+  },
+  "sonprayag": {
+   "name": "Sonprayag",
+   "x": 520,
+   "y": 150,
+   "facilities": [
+    "stay",
+    "medical",
+    "screening",
+    "police"
+   ],
+   "lat": 30.634,
+   "lon": 78.999
+  },
+  "gaurikund": {
+   "name": "Gaurikund",
+   "x": 545,
+   "y": 105,
+   "facilities": [
+    "stay",
+    "medical"
+   ],
+   "lat": 30.6526,
+   "lon": 79.0258
+  },
+  "kedarnath": {
+   "name": "Kedarnath",
+   "x": 580,
+   "y": 50,
+   "facilities": [
+    "shelter",
+    "medical"
+   ],
+   "lat": 30.7352,
+   "lon": 79.0669
+  },
+  "karnaprayag": {
+   "name": "Karnaprayag",
+   "x": 510,
+   "y": 320,
+   "facilities": [
+    "stay",
+    "medical",
+    "fuel"
+   ],
+   "lat": 30.2614,
+   "lon": 79.2178
+  },
+  "chamoli": {
+   "name": "Chamoli",
+   "x": 610,
+   "y": 290,
+   "facilities": [
+    "stay",
+    "medical",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.4023,
+   "lon": 79.3205
+  },
+  "joshimath": {
+   "name": "Joshimath",
+   "x": 700,
+   "y": 230,
+   "facilities": [
+    "stay",
+    "hospital",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.555,
+   "lon": 79.5643
+  },
+  "govindghat": {
+   "name": "Govindghat",
+   "x": 760,
+   "y": 190,
+   "facilities": [
+    "stay",
+    "medical"
+   ],
+   "lat": 30.6159,
+   "lon": 79.5603
+  },
+  "hemkund": {
+   "name": "Hemkund Sahib",
+   "x": 820,
+   "y": 110,
+   "facilities": [
+    "shelter",
+    "medical"
+   ],
+   "lat": 30.698,
+   "lon": 79.606
+  },
+  "badrinath": {
+   "name": "Badrinath",
+   "x": 830,
+   "y": 170,
+   "facilities": [
+    "stay",
+    "medical",
+    "police"
+   ],
+   "lat": 30.7433,
+   "lon": 79.4938
+  },
+  "barkot": {
+   "name": "Barkot",
+   "x": 150,
+   "y": 220,
+   "facilities": [
+    "stay",
+    "medical",
+    "fuel"
+   ],
+   "lat": 30.809,
+   "lon": 78.206
+  },
+  "janki_chatti": {
+   "name": "Janki Chatti",
+   "x": 120,
+   "y": 120,
+   "facilities": [
+    "stay",
+    "medical",
+    "screening"
+   ],
+   "lat": 30.962,
+   "lon": 78.433
+  },
+  "yamunotri": {
+   "name": "Yamunotri",
+   "x": 95,
+   "y": 55,
+   "facilities": [
+    "shelter",
+    "medical"
+   ],
+   "lat": 31.014,
+   "lon": 78.46
+  },
+  "uttarkashi": {
+   "name": "Uttarkashi",
+   "x": 280,
+   "y": 200,
+   "facilities": [
+    "stay",
+    "hospital",
+    "fuel",
+    "police"
+   ],
+   "lat": 30.7268,
+   "lon": 78.4354
+  },
+  "gangotri": {
+   "name": "Gangotri",
+   "x": 350,
+   "y": 90,
+   "facilities": [
+    "stay",
+    "medical"
+   ],
+   "lat": 30.9947,
+   "lon": 78.9398
+  }
+ },
+ "segments": [
+  {
+   "id": "rishikesh_devprayag",
+   "from": "rishikesh",
+   "to": "devprayag",
+   "km": 72,
+   "district": "Tehri Garhwal",
+   "slope": 2,
+   "slide_history": 6,
+   "mode": "road"
+  },
+  {
+   "id": "devprayag_srinagar",
+   "from": "devprayag",
+   "to": "srinagar",
+   "km": 34,
+   "district": "Pauri Garhwal",
+   "slope": 2,
+   "slide_history": 4,
+   "mode": "road"
+  },
+  {
+   "id": "srinagar_rudraprayag",
+   "from": "srinagar",
+   "to": "rudraprayag",
+   "km": 33,
+   "district": "Rudraprayag",
+   "slope": 2,
+   "slide_history": 5,
+   "mode": "road"
+  },
+  {
+   "id": "rudraprayag_guptkashi",
+   "from": "rudraprayag",
+   "to": "guptkashi",
+   "km": 45,
+   "district": "Rudraprayag",
+   "slope": 3,
+   "slide_history": 7,
+   "mode": "road"
+  },
+  {
+   "id": "guptkashi_sonprayag",
+   "from": "guptkashi",
+   "to": "sonprayag",
+   "km": 31,
+   "district": "Rudraprayag",
+   "slope": 3,
+   "slide_history": 9,
+   "mode": "road"
+  },
+  {
+   "id": "sonprayag_gaurikund",
+   "from": "sonprayag",
+   "to": "gaurikund",
+   "km": 5,
+   "district": "Rudraprayag",
+   "slope": 3,
+   "slide_history": 8,
+   "mode": "road"
+  },
+  {
+   "id": "gaurikund_kedarnath",
+   "from": "gaurikund",
+   "to": "kedarnath",
+   "km": 16,
+   "district": "Rudraprayag",
+   "slope": 3,
+   "slide_history": 6,
+   "mode": "trek"
+  },
+  {
+   "id": "rudraprayag_karnaprayag",
+   "from": "rudraprayag",
+   "to": "karnaprayag",
+   "km": 31,
+   "district": "Chamoli",
+   "slope": 2,
+   "slide_history": 4,
+   "mode": "road"
+  },
+  {
+   "id": "karnaprayag_chamoli",
+   "from": "karnaprayag",
+   "to": "chamoli",
+   "km": 38,
+   "district": "Chamoli",
+   "slope": 2,
+   "slide_history": 5,
+   "mode": "road"
+  },
+  {
+   "id": "chamoli_joshimath",
+   "from": "chamoli",
+   "to": "joshimath",
+   "km": 44,
+   "district": "Chamoli",
+   "slope": 3,
+   "slide_history": 8,
+   "mode": "road"
+  },
+  {
+   "id": "joshimath_badrinath",
+   "from": "joshimath",
+   "to": "badrinath",
+   "km": 44,
+   "district": "Chamoli",
+   "slope": 3,
+   "slide_history": 7,
+   "mode": "road"
+  },
+  {
+   "id": "joshimath_govindghat",
+   "from": "joshimath",
+   "to": "govindghat",
+   "km": 20,
+   "district": "Chamoli",
+   "slope": 3,
+   "slide_history": 5,
+   "mode": "road"
+  },
+  {
+   "id": "govindghat_hemkund",
+   "from": "govindghat",
+   "to": "hemkund",
+   "km": 19,
+   "district": "Chamoli",
+   "slope": 3,
+   "slide_history": 4,
+   "mode": "trek"
+  },
+  {
+   "id": "rishikesh_barkot",
+   "from": "rishikesh",
+   "to": "barkot",
+   "km": 160,
+   "district": "Uttarkashi",
+   "slope": 2,
+   "slide_history": 6,
+   "mode": "road"
+  },
+  {
+   "id": "barkot_janki_chatti",
+   "from": "barkot",
+   "to": "janki_chatti",
+   "km": 45,
+   "district": "Uttarkashi",
+   "slope": 3,
+   "slide_history": 7,
+   "mode": "road"
+  },
+  {
+   "id": "janki_chatti_yamunotri",
+   "from": "janki_chatti",
+   "to": "yamunotri",
+   "km": 6,
+   "district": "Uttarkashi",
+   "slope": 3,
+   "slide_history": 4,
+   "mode": "trek"
+  },
+  {
+   "id": "barkot_uttarkashi",
+   "from": "barkot",
+   "to": "uttarkashi",
+   "km": 82,
+   "district": "Uttarkashi",
+   "slope": 2,
+   "slide_history": 5,
+   "mode": "road"
+  },
+  {
+   "id": "uttarkashi_gangotri",
+   "from": "uttarkashi",
+   "to": "gangotri",
+   "km": 99,
+   "district": "Uttarkashi",
+   "slope": 3,
+   "slide_history": 8,
+   "mode": "road"
+  }
+ ],
+ "trips": {
+  "kedarnath": [
+   "rishikesh_devprayag",
+   "devprayag_srinagar",
+   "srinagar_rudraprayag",
+   "rudraprayag_guptkashi",
+   "guptkashi_sonprayag",
+   "sonprayag_gaurikund",
+   "gaurikund_kedarnath"
+  ],
+  "badrinath": [
+   "rishikesh_devprayag",
+   "devprayag_srinagar",
+   "srinagar_rudraprayag",
+   "rudraprayag_karnaprayag",
+   "karnaprayag_chamoli",
+   "chamoli_joshimath",
+   "joshimath_badrinath"
+  ],
+  "hemkund": [
+   "rishikesh_devprayag",
+   "devprayag_srinagar",
+   "srinagar_rudraprayag",
+   "rudraprayag_karnaprayag",
+   "karnaprayag_chamoli",
+   "chamoli_joshimath",
+   "joshimath_govindghat",
+   "govindghat_hemkund"
+  ],
+  "yamunotri": [
+   "rishikesh_barkot",
+   "barkot_janki_chatti",
+   "janki_chatti_yamunotri"
+  ],
+  "gangotri": [
+   "rishikesh_barkot",
+   "barkot_uttarkashi",
+   "uttarkashi_gangotri"
+  ]
+ }
+}
