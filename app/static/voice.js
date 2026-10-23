@@ -152,15 +152,26 @@
     if (fromClick) { YS.toast("Voice input is not supported in this browser", 4000); if (YS.page !== "assistant") YS.goto("assistant"); }
   }
   const support = $("#voice-support");
-  if (SR && secure) {
-    support.innerHTML = `✅ <b>Voice input is available.</b> Speak English (en-IN), or pick <b>हिन्दी</b> in the language menu for Hindi.
-      Spoken questions are answered aloud. <br><span class="muted">Note: your browser's speech service processes the audio, so voice input needs a network.
-      Other Indian languages are not supported yet (planned through Bhashini).</span>`;
-  } else {
-    support.innerHTML = `⚠️ <b>Voice input is not supported in this browser.</b> ${!SR ? "Use Chrome, Edge or Safari." : "Open the app on localhost or HTTPS."}
-      ${synth ? "Read-aloud (🔊 Listen) still works." : "Read-aloud is also unavailable."}`;
-    MICS.forEach(m => { m.classList.add("unsupported"); m.title = "Voice input is not supported in this browser"; });
+  function renderSupport() {
+    const hi = I18N.lang === "hi";
+    if (SR && secure) {
+      support.innerHTML = hi
+        ? `✅ <b>आवाज़ इनपुट उपलब्ध है।</b> हिन्दी चुनी गई है, इसलिए हिन्दी (hi-IN) में बोलें। बोले गए प्रश्नों के उत्तर पढ़कर सुनाए जाते हैं।
+          <br><span class="muted">नोट: आपकी आवाज़ ब्राउज़र की स्पीच सेवा पर प्रोसेस होती है, इसलिए इंटरनेट चाहिए। अन्य भारतीय भाषाएँ अभी उपलब्ध नहीं हैं (भाषिणी से जोड़ने की योजना)।</span>`
+        : `✅ <b>Voice input is available.</b> Speak English (en-IN), or pick <b>हिन्दी</b> in the language menu for Hindi.
+          Spoken questions are answered aloud. <br><span class="muted">Note: your browser's speech service processes the audio, so voice input needs a network.
+          Other Indian languages are not supported yet (planned through Bhashini).</span>`;
+    } else {
+      support.innerHTML = hi
+        ? `⚠️ <b>इस ब्राउज़र में आवाज़ इनपुट उपलब्ध नहीं है।</b> ${!SR ? "Chrome, Edge या Safari इस्तेमाल करें।" : "ऐप को localhost या HTTPS पर खोलें।"}
+          ${synth ? "पढ़कर सुनाना (🔊 सुनें) फिर भी काम करता है।" : "पढ़कर सुनाना भी उपलब्ध नहीं है।"}`
+        : `⚠️ <b>Voice input is not supported in this browser.</b> ${!SR ? "Use Chrome, Edge or Safari." : "Open the app on localhost or HTTPS."}
+          ${synth ? "Read-aloud (🔊 Listen) still works." : "Read-aloud is also unavailable."}`;
+    }
   }
+  renderSupport();
+  document.addEventListener("ys:lang", renderSupport);
+  if (!(SR && secure)) MICS.forEach(m => { m.classList.add("unsupported"); m.title = "Voice input is not supported in this browser"; });
 
   window.YSVoice = { speak, stop: stopSpeaking, start, handle, replyToVoice: true, supported: !!(SR && secure) };
 })();

@@ -10,7 +10,7 @@
   <img alt="OpenRouter" src="https://img.shields.io/badge/OpenRouter-LLM-6566F1">
   <img alt="PWA" src="https://img.shields.io/badge/PWA-offline_ready-5A0FC8?logo=pwa&logoColor=white">
   <img alt="Voice" src="https://img.shields.io/badge/Voice-hi--IN_%7C_en--IN-d9731e">
-  <img alt="Tests" src="https://img.shields.io/badge/tests-23_passing-2e8b57?logo=pytest&logoColor=white">
+  <img alt="Tests" src="https://img.shields.io/badge/tests-28_passing-2e8b57?logo=pytest&logoColor=white">
 </p>
 
 <p align="center">
@@ -23,6 +23,7 @@
   <a href="#website">Website</a> ·
   <a href="#voice">Voice</a> ·
   <a href="#architecture">Architecture</a> ·
+  <a href="#route-api">Route API</a> ·
   <a href="#ai-stack">AI stack</a> ·
   <a href="#evaluation">Evaluation</a> ·
   <a href="#structure">Structure</a>
@@ -43,7 +44,7 @@ and reach the travellers on an affected route.
 | 💬 | **Multilingual assistant** | Answers yatra questions in English and Hindi (more via Bhashini), with sources and dates, follow-up suggestions and one-tap actions | Script-based language detection, TF-IDF + logistic-regression intent model, hybrid TF-IDF retrieval (RAG), OpenRouter LLM through LangChain with a numeric-grounding guardrail |
 | 🎙️ | **Voice commands** | Speak a question or a command ("open crowd forecast for Badrinath", "भीड़ दिखाओ"). Answers can be read aloud | Browser Web Speech API (SpeechRecognition + SpeechSynthesis), English/Hindi command grammar |
 | 📊 | **Crowd forecast** | 7-day footfall forecast per shrine against carrying capacity, lighter dates and alternatives | Histogram gradient-boosting regressor on calendar + weather features |
-| 🛣️ | **Route risk** | Live risk map and per-segment risk with explanations, plus a safe-halt suggestion | Transparent weighted risk score (IMD alert, rain, road status, terrain) |
+| 🛣️ | **Route risk** | Clickable risk map with a score breakdown per segment, live closures / IMD alerts / advisories, a timed trip planner with overnight halts, "near me" and a shrine-route comparison | Transparent weighted risk score (IMD alert, rain, road status, terrain) + rule-based itinerary planning |
 | ❤️ | **Health check** | Readiness category, screening points and medical posts on the route | Rule-based triage (no diagnosis) |
 | 🔔 | **Trip alerts & SOS** | Consent-based trip subscription, WhatsApp alerts with SMS fallback, SOS with nearest help and "locate me" | Haversine nearest-facility search |
 | 🏛️ | **Officials' dashboard** | Advisory drafting and four-eyes approval, road status, IMD alerts, delivery log, model metrics, audit log | Role-based access control |
@@ -85,7 +86,7 @@ Uttarakhand's temples and mountains.
 | Home: hero, ask box and floating highlights | Assistant: voice, actions, live mini-forecast |
 |---|---|
 | <img src="docs/screenshots/web_01_home.png" alt="Home page"> | <img src="docs/screenshots/web_02_assistant.png" alt="Assistant page"> |
-| **Crowd forecast**: shrine pills, 7-day cards, capacity line | **Route risk**: map, per-segment reasons, safe halt |
+| **Crowd forecast**: shrine pills, 7-day cards, capacity line | **Route risk**: live KPIs, clickable map, trip planner, alerts, route comparison |
 | <img src="docs/screenshots/web_03_crowd.png" alt="Crowd forecast page"> | <img src="docs/screenshots/web_04_route.png" alt="Route risk page"> |
 
 <details>
@@ -248,6 +249,38 @@ sequenceDiagram
 ```
 </details>
 
+<a id="route-api"></a>
+
+## 🛣️ Route-risk API
+
+The route page is backed by these endpoints (all `GET`, JSON). Interactive docs are at `/docs` when the server is running.
+
+| Endpoint | Returns |
+|---|---|
+| `/api/risk/network` | Every segment with score, level, reasons (English + Hindi), score split by factor, road status |
+| `/api/risk/summary` | Segments by level, closures and restrictions, active IMD district alerts, advisory count |
+| `/api/risk/segment/{id}` | One segment: score breakdown, weather, road status, advisories, facilities at both ends, safe halt |
+| `/api/risk/advisories` | Published advisories that are still valid, with readable segment names |
+| `/api/risk/compare` | All five shrine routes side by side, safest first |
+| `/api/risk/trip/{shrine}` | Risk for every segment on a shrine's route and the worst stretch |
+| `/api/risk/plan/{shrine}?start=&depart=&vehicle=` | Timed itinerary: per-leg ETA and risk, overnight halts, stop before a closed road |
+| `/api/risk/nearby?lat=&lon=` | Nearest point on the network, the risk around it and the nearest medical help |
+
+```bash
+curl "http://127.0.0.1:8000/api/risk/plan/kedarnath?start=guptkashi&depart=2026-05-20T06:00&vehicle=bus"
+```
+
+<details>
+<summary><b>How the trip planner decides</b></summary>
+
+- **Speeds** (planning values): hill roads 24–35 km/h by slope class, treks 2.3–3.2 km/h (Gaurikund → Kedarnath ≈ 7 h).
+  Buses take 20% longer; restricted roads add 30% and an Orange/Red IMD alert adds 20%.
+- **Night rule:** no hill-road leg may start or end between 22:00 and 04:00, and treks must start by 14:00.
+  Otherwise the plan adds an overnight halt and resumes at 05:00, warning if that town has no listed stay.
+- **Closed road:** the plan stops at the nearest earlier town with stay and medical facilities and shows the expected reopening.
+- Conditions are those *now*. The planner says so and asks travellers to re-check before leaving.
+</details>
+
 <a id="ai-stack"></a>
 
 ## 🤖 AI stack: OpenRouter + LangChain
@@ -280,7 +313,7 @@ shown in the assistant header and at `GET /api/ai/status`.
 ## 📏 Evaluation
 
 ```bash
-pytest -v                            # 23 unit and API tests
+pytest -v                            # 28 unit and API tests
 python scripts/evaluate.py           # retrieval, intent, emergency and forecast metrics
 ```
 
@@ -344,7 +377,7 @@ app/
   language.py        language detection + Bhashini client
   llm.py             LangChain + OpenRouter chain, grounding guardrail and PII redaction
   forecast.py        crowd forecasting model and evaluation
-  risk.py            route-risk scoring and safe-halt search
+  risk.py            route-risk scoring, live feed, trip planner, safe-halt and nearby search
   health.py          health-readiness rules
   alerts.py          subscriptions, advisories (four-eyes), alert dispatch with SMS fallback
   db.py, config.py   SQLite persistence and configuration

@@ -3,7 +3,7 @@
 Run:  uvicorn app.main:app --reload    then open http://127.0.0.1:8000
 """
 import secrets
-from datetime import date
+from datetime import date, datetime
 from urllib.parse import quote
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
@@ -15,7 +15,8 @@ from . import alerts, db, health, llm
 from .assistant import respond
 from .config import ADMIN_USERS, BASE_DIR
 from .forecast import forecaster
-from .risk import NODES, TRIPS, network_risk, trip_risk
+from .risk import (NODES, SEGMENTS, TRIPS, VEHICLE_FACTOR, active_advisories, compare_routes, haversine_km, nearby,
+                   network_risk, plan_trip, risk_summary, segment_detail, trip_risk)
 
 db.init_db()
 for adv in db.rows("SELECT * FROM advisories WHERE status='published'"):
@@ -26,13 +27,6 @@ app = FastAPI(title="YatraSetu AI", version="1.0.0",
               description="AI-powered multilingual safe-travel and crowd advisory assistant for Uttarakhand")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "static"), name="static")
 TOKENS: dict[str, dict] = {}
-
-
-def haversine_km(lat1, lon1, lat2, lon2):
-    from math import asin, cos, radians, sin, sqrt
-    dlat, dlon = radians(lat2 - lat1), radians(lon2 - lon1)
-    a = sin(dlat / 2) ** 2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon / 2) ** 2
-    return 6371 * 2 * asin(sqrt(a))
 
 
 # ---------- models ----------
@@ -168,6 +162,57 @@ def risk_trip(shrine: str):
     if shrine not in TRIPS:
         raise HTTPException(404, "Unknown shrine")
     return trip_risk(shrine)
+
+
+@app.get("/api/risk/summary")
+def risk_overview():
+    """Segments by risk level, closures and restrictions, active IMD alerts and advisory count."""
+    return risk_summary()
+
+
+@app.get("/api/risk/segment/{segment_id}")
+def risk_segment(segment_id: str):
+    """One segment: score split by factor, weather, road status, advisories, facilities at both ends."""
+    if segment_id not in SEGMENTS:
+        raise HTTPException(404, "Unknown segment")
+    return segment_detail(segment_id)
+
+
+@app.get("/api/risk/advisories")
+def risk_advisories():
+    """Published advisories that are still valid."""
+    return active_advisories()
+
+
+@app.get("/api/risk/compare")
+def risk_compare():
+    """All shrine routes side by side, safest first."""
+    return compare_routes()
+
+
+@app.get("/api/risk/plan/{shrine}")
+def risk_plan(shrine: str, start: str | None = None, depart: str | None = None, vehicle: str = "car"):
+    """Timed itinerary: per-leg risk and ETA, overnight halts, and a stop before any closed road."""
+    if shrine not in TRIPS:
+        raise HTTPException(404, "Unknown shrine")
+    if vehicle not in VEHICLE_FACTOR:
+        raise HTTPException(422, f"vehicle must be one of {sorted(VEHICLE_FACTOR)}")
+    try:
+        when = datetime.fromisoformat(depart) if depart else None
+    except ValueError:
+        raise HTTPException(422, "depart must be an ISO date-time, e.g. 2026-05-20T06:00")
+    try:
+        return plan_trip(shrine, start, when, vehicle)
+    except ValueError as e:
+        raise HTTPException(400, str(e))
+
+
+@app.get("/api/risk/nearby")
+def risk_nearby(lat: float, lon: float):
+    """Nearest point on the route network to a location, the risk around it and the nearest medical help."""
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        raise HTTPException(422, "Invalid coordinates")
+    return nearby(lat, lon)
 
 
 @app.post("/api/subscribe")

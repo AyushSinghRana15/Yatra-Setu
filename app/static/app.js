@@ -6,14 +6,16 @@ const api = async (url, body, method) => {
   const j = await r.json(); if (!r.ok) throw new Error(j.detail ? JSON.stringify(j.detail) : r.statusText); return j;
 };
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-const badge = t => `<span class="badge b-${String(t).split(" ")[0]}">${esc(t)}</span>`;
+const tr = s => I18N.tr(s);                       // UI text in the chosen language (i18n.js)
+const isHi = () => I18N.lang === "hi";
+const badge = t => `<span class="badge b-${String(t).split(" ")[0]}">${esc(tr(t))}</span>`;  // colour keyed on the English value
 const iso = d => d.toISOString().slice(0, 10);
 const store = {  // per-browser conveniences only; the app works without storage
   get(k, d) { try { const v = localStorage.getItem("ys_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem("ys_" + k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
 function toast(msg, ms = 3200) {
-  const t = $("#toast"); t.textContent = msg; t.classList.add("show");
+  const t = $("#toast"); t.textContent = tr(msg); t.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
 }
 
@@ -113,37 +115,57 @@ const io2 = "IntersectionObserver" in window ? new IntersectionObserver(es => es
 let SHRINES = [];
 const ready = (async () => {
   SHRINES = await api("/api/shrines");
-  ["#c-shrine", "#r-shrine", "#h-shrine", "#s-shrine"].forEach(sel =>
-    $(sel).innerHTML = SHRINES.map(s => `<option value="${s.id}">${s.name} (${s.altitude_m.toLocaleString("en-IN")} m)</option>`).join(""));
-  $("#c-pills").innerHTML = SHRINES.map(s => `<button data-id="${s.id}" role="tab">${esc(s.name)}</button>`).join("");
-  $$("#c-pills button").forEach(b => b.onclick = () => { $("#c-shrine").value = b.dataset.id; loadForecast(); });
+  renderShrineOptions();
   const t = new Date(); $("#c-date").value = iso(t); $("#s-from").value = iso(t);
   const e = new Date(t); e.setDate(e.getDate() + 5); $("#s-to").value = iso(e);
 })();
-const shrineName = id => (SHRINES.find(s => s.id === id) || {}).name || id;
+const shrineName = id => { const s = SHRINES.find(x => x.id === id); return s ? (isHi() ? s.name_hi : s.name) : id; };
+function renderShrineOptions() {
+  const m = isHi() ? "मी" : "m";
+  ["#c-shrine", "#r-shrine", "#h-shrine", "#s-shrine"].forEach(sel => {
+    const keep = $(sel).value;
+    $(sel).innerHTML = SHRINES.map(s => `<option value="${s.id}">${esc(shrineName(s.id))} (${s.altitude_m.toLocaleString("en-IN")} ${m})</option>`).join("");
+    if (keep) $(sel).value = keep;
+  });
+  const on = $("#c-shrine").value;
+  $("#c-pills").innerHTML = SHRINES.map(s => `<button data-id="${s.id}" role="tab" class="${s.id === on ? "on" : ""}">${esc(shrineName(s.id))}</button>`).join("");
+  $$("#c-pills button").forEach(b => b.onclick = () => { $("#c-shrine").value = b.dataset.id; loadForecast(); });
+}
 
 // ================= HOME =================
 const WHY = [
   { i: "🎯", t: "Answers, not PDFs", old: "Scroll through notices and PDFs to find one detail.",
-    neu: "Ask in plain words and get a short answer with its source and date.", go: "assistant" },
+    neu: "Ask in plain words and get a short answer with its source and date.", go: "assistant",
+    hi: ["जवाब, PDF नहीं", "एक जानकारी के लिए ढेरों सूचनाएँ और PDF पढ़ने पड़ते हैं।", "सीधे शब्दों में पूछें, स्रोत और तारीख के साथ छोटा उत्तर पाएँ।"] },
   { i: "🗣️", t: "Speak your language", old: "Mostly English-only pages and forms.",
-    neu: "Hindi and English, typed or spoken, with replies read aloud.", go: "assistant" },
+    neu: "Hindi and English, typed or spoken, with replies read aloud.", go: "assistant",
+    hi: ["अपनी भाषा में बोलें", "ज़्यादातर पेज और फ़ॉर्म सिर्फ़ अंग्रेज़ी में।", "हिन्दी और अंग्रेज़ी, लिखकर या बोलकर, उत्तर पढ़कर सुनाए जाते हैं।"] },
   { i: "📈", t: "Know the crowd before you go", old: "You find out about the rush when you are already in the queue.",
-    neu: "A 7-day forecast against carrying capacity, with lighter dates.", go: "crowd" },
+    neu: "A 7-day forecast against carrying capacity, with lighter dates.", go: "crowd",
+    hi: ["जाने से पहले भीड़ जानें", "भीड़ का पता तब चलता है जब आप कतार में खड़े होते हैं।", "धारण क्षमता की तुलना में 7 दिन का अनुमान, कम भीड़ वाली तारीखों के साथ।"] },
   { i: "🛣️", t: "One view of the road", old: "Weather, road and landslide updates are spread over many sites.",
-    neu: "Each segment scored from IMD alerts, road status and terrain, with reasons.", go: "route" },
+    neu: "Each segment scored from IMD alerts, road status and terrain, with reasons.", go: "route",
+    hi: ["सड़क की पूरी तस्वीर एक जगह", "मौसम, सड़क और भूस्खलन की खबरें कई साइटों पर बिखरी हैं।", "IMD अलर्ट, सड़क की स्थिति और भू-भाग से हर हिस्से का जोखिम, कारण सहित।"] },
   { i: "🔔", t: "Alerts come to you", old: "You have to keep checking back for changes.",
-    neu: "WhatsApp alerts for your own route segments, with SMS fallback.", go: "alerts" },
+    neu: "WhatsApp alerts for your own route segments, with SMS fallback.", go: "alerts",
+    hi: ["अलर्ट आप तक पहुँचते हैं", "बदलाव जानने के लिए बार-बार साइट देखनी पड़ती है।", "आपके मार्ग के हिस्सों के लिए WhatsApp अलर्ट, SMS विकल्प के साथ।"] },
   { i: "📶", t: "Works on weak networks", old: "Heavy pages that fail without a signal.",
-    neu: "A light offline PWA, an emergency card and SOS with the nearest medical post.", go: "alerts" },
+    neu: "A light offline PWA, an emergency card and SOS with the nearest medical post.", go: "alerts",
+    hi: ["कमज़ोर नेटवर्क पर भी", "भारी पेज जो सिग्नल न होने पर खुलते ही नहीं।", "हल्का ऑफ़लाइन PWA, आपात कार्ड और नज़दीकी चिकित्सा केंद्र के साथ SOS।"] },
 ];
-$("#why-grid").innerHTML = WHY.map((w, k) => `
-  <button class="why-card" data-go="${w.go}" style="--d:${(k % 3) * 0.12 + Math.floor(k / 3) * 0.18}s;--fd:${6 + (k % 3)}s;--fo:${-k * 0.9}s">
-    <div class="wi">${w.i}</div><h3>${esc(w.t)}</h3>
-    <div class="vs"><div class="old">${esc(w.old)}</div><div class="new">${esc(w.neu)}</div></div>
-    <div class="peek">Hover or tap to compare →</div>
-  </button>`).join("");
-$$(".why-card").forEach(c => {
+function renderWhy() {
+  const shown = $$("#why-grid .why-card.in").length > 0;   // keep cards visible when re-rendering for a language change
+  $("#why-grid").innerHTML = WHY.map((w, k) => {
+    const [t, old, neu] = isHi() ? w.hi : [w.t, w.old, w.neu];
+    return `<button class="why-card${shown ? " in" : ""}" data-go="${w.go}" style="--d:${(k % 3) * 0.12 + Math.floor(k / 3) * 0.18}s;--fd:${6 + (k % 3)}s;--fo:${-k * 0.9}s">
+      <div class="wi">${w.i}</div><h3>${esc(t)}</h3>
+      <div class="vs"><div class="old">${esc(old)}</div><div class="new">${esc(neu)}</div></div>
+      <div class="peek">${esc(tr("Hover or tap to compare →"))}</div>
+    </button>`;
+  }).join("");
+  bindWhy();
+}
+const bindWhy = () => $$(".why-card").forEach(c => {
   c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect();
     c.style.setProperty("--mx", `${e.clientX - r.left}px`); c.style.setProperty("--my", `${e.clientY - r.top}px`); });
   c.onclick = () => {  // first tap on touch screens reveals the comparison, second tap opens the feature
@@ -151,15 +173,19 @@ $$(".why-card").forEach(c => {
     goto(c.dataset.go);
   };
 });
+renderWhy();
 
 const HERO_CHIPS = ["Is Kedarnath crowded this week?", "Is the road to Badrinath open?", "How do I register for the yatra?", "केदारनाथ में कल कितनी भीड़ होगी?"];
-$("#hero-chips").innerHTML = HERO_CHIPS.map(q => `<button type="button">${esc(q)}</button>`).join("");
-$$("#hero-chips button").forEach(b => b.onclick = () => askFromAnywhere(b.textContent));
+function renderHeroChips() {
+  $("#hero-chips").innerHTML = (isHi() ? I18N.list("hero") : HERO_CHIPS).map(q => `<button type="button">${esc(q)}</button>`).join("");
+  $$("#hero-chips button").forEach(b => b.onclick = () => askFromAnywhere(b.textContent));
+}
+renderHeroChips();
 $("#hero-ask").onsubmit = e => { e.preventDefault(); const v = $("#hero-q").value.trim(); if (v) { askFromAnywhere(v); $("#hero-q").value = ""; } };
 
 let homeLoaded = false;
-async function loadHome() {
-  if (homeLoaded) return; homeLoaded = true;
+async function loadHome(force) {
+  if (homeLoaded && !force) return; homeLoaded = true;
   await ready;
   const today = iso(new Date());
   const cards = await Promise.all(SHRINES.map(async s => {
@@ -168,14 +194,15 @@ async function loadHome() {
     const d = f && f.days[0];
     return `<div class="shrine-card reveal" style="--img:url('${IMG[s.id] || ""}')">
       <div class="ph"></div>
-      <h3>${esc(s.name)} <small style="opacity:.8;font-weight:400">${esc(s.name_hi)}</small></h3>
-      <div class="alt">⛰️ ${s.altitude_m.toLocaleString("en-IN")} m · ${esc(s.district)}</div>
-      <div class="st"><span>👥 Crowd today</span>${d ? badge(d.band) : "–"}</div>
-      <div class="st"><span>🛣️ Route</span>${t ? badge(t.worst.level) : "–"}</div>
-      <div class="acts"><button data-act="crowd" data-id="${s.id}">Forecast</button><button data-act="route" data-id="${s.id}">Route</button></div>
+      <h3>${esc(isHi() ? s.name_hi : s.name)} <small style="opacity:.8;font-weight:400">${esc(isHi() ? s.name : s.name_hi)}</small></h3>
+      <div class="alt">⛰️ ${s.altitude_m.toLocaleString("en-IN")} ${isHi() ? "मी" : "m"} · ${esc(s.district)}</div>
+      <div class="st"><span>${tr("👥 Crowd today")}</span>${d ? badge(d.band) : "–"}</div>
+      <div class="st"><span>${tr("🛣️ Route")}</span>${t ? badge(t.worst.level) : "–"}</div>
+      <div class="acts"><button data-act="crowd" data-id="${s.id}">${tr("Forecast")}</button><button data-act="route" data-id="${s.id}">${tr("Route")}</button></div>
     </div>`;
   }));
   $("#shrine-grid").innerHTML = cards.join("");
+  if (force) $$("#shrine-grid .reveal").forEach(el => el.classList.add("in"));
   $$("#shrine-grid [data-act]").forEach(b => b.onclick = () => goto(b.dataset.act, { shrine: b.dataset.id }));
   observeReveals();
 }
@@ -184,13 +211,23 @@ onEnter.home = () => loadHome();
 // ================= ASSISTANT =================
 const QUICK = ["Is Kedarnath crowded this week?", "Is the road to Kedarnath open?", "How do I register for the yatra?",
   "My father is 68 with BP, can he do the trek?", "What should I pack for Hemkund Sahib?", "केदारनाथ में कल कितनी भीड़ होगी?", "हेलीकॉप्टर टिकट कैसे बुक करें?"];
-QUICK.forEach(q => { const b = document.createElement("button"); b.type = "button"; b.textContent = q; b.onclick = () => ask(q); $("#quick").appendChild(b); });
+function renderQuick() {
+  $("#quick").innerHTML = "";
+  (isHi() ? I18N.list("quick") : QUICK).forEach(q => { const b = document.createElement("button"); b.type = "button"; b.textContent = q; b.onclick = () => ask(q); $("#quick").appendChild(b); });
+}
+renderQuick();
 
 const FOLLOW = {  // next questions worth asking after each intent
   crowd: s => [`Which day is least crowded at ${s}?`, `Is the road to ${s} open?`],
   route: s => [`Is ${s} crowded this week?`, "Where can I halt safely on the way?"],
   health: () => ["Where are the medical posts on the route?", "What should I carry for high altitude?"],
   registration: () => ["Is registration free?", "Which documents do I need?"],
+};
+const FOLLOW_HI = {
+  crowd: s => [`${s} में किस दिन सबसे कम भीड़ है?`, `क्या ${s} का रास्ता खुला है?`],
+  route: s => [`इस हफ्ते ${s} में भीड़ कैसी है?`, "रास्ते में सुरक्षित पड़ाव कहाँ है?"],
+  health: () => ["मार्ग पर चिकित्सा केंद्र कहाँ हैं?", "ऊँचाई के लिए क्या साथ ले जाएँ?"],
+  registration: () => ["क्या पंजीकरण निःशुल्क है?", "कौन से दस्तावेज़ चाहिए?"],
 };
 let HISTORY = store.get("chat", []);
 let lastAnswer = null;
@@ -199,7 +236,7 @@ function addMsg(html, cls) {
   const d = document.createElement("div"); d.className = "msg " + cls; d.innerHTML = html;
   $("#chat").appendChild(d); $("#chat").scrollTop = 1e6; return d;
 }
-const GREETING = "Namaste! 🙏 I am YatraSetu. Ask me about crowds, routes, registration, health or safety on the Char Dham yatra, in English or हिन्दी. You can also tap 🎙️ and speak.";
+const GREETING_EN = "Namaste! 🙏 I am YatraSetu. Ask me about crowds, routes, registration, health or safety on the Char Dham yatra, in English or हिन्दी. You can also tap 🎙️ and speak.";
 
 function miniForecast(fc) {
   const days = (fc.days || []).slice(0, 7); if (!days.length) return "";
@@ -210,21 +247,23 @@ function miniForecast(fc) {
       title="${esc(d.date)}: ${d.open ? d.visitors.toLocaleString("en-IN") + " · " + esc(d.band) : "closed"}"><span>${esc(d.date.slice(8))}</span></div>`).join("")}</div></div>`;
 }
 
+const greeting = () => isHi() ? I18N.list("greeting") : GREETING_EN;
 function renderBot(r, el) {
   const name = r.shrine ? shrineName(r.shrine) : "";
   const src = (r.sources || []).map(s => `<span class="src">📄 ${esc(s.title)} · ${esc(s.updated)}</span>`).join("");
   const acts = [];
-  if (r.sos) acts.push(`<a class="btn red sm" href="tel:112">📞 Call 112</a>`, `<button class="act" data-go="alerts" data-sos>🚨 Open SOS</button>`);
-  if (r.intent === "crowd" && r.shrine) acts.push(`<button class="act" data-go="crowd" data-shrine="${r.shrine}">📊 Full forecast for ${esc(name)}</button>`);
-  if (r.intent === "route" && r.shrine) acts.push(`<button class="act" data-go="route" data-shrine="${r.shrine}">🛣️ Show on route map</button>`);
-  if (r.intent === "health") acts.push(`<button class="act" data-go="health" ${r.shrine ? `data-shrine="${r.shrine}"` : ""}>❤️ Open health check</button>`);
-  const follow = (FOLLOW[r.intent] ? FOLLOW[r.intent](name || "Kedarnath") : []).filter(() => r.language !== "hi");
+  if (r.sos) acts.push(`<a class="btn red sm" href="tel:112">${tr("📞 Call 112")}</a>`, `<button class="act" data-go="alerts" data-sos>${tr("🚨 Open SOS")}</button>`);
+  if (r.intent === "crowd" && r.shrine) acts.push(`<button class="act" data-go="crowd" data-shrine="${r.shrine}">📊 ${esc(isHi() ? `${name} का पूरा अनुमान` : `Full forecast for ${name}`)}</button>`);
+  if (r.intent === "route" && r.shrine) acts.push(`<button class="act" data-go="route" data-shrine="${r.shrine}">${tr("🛣️ Show on route map")}</button>`);
+  if (r.intent === "health") acts.push(`<button class="act" data-go="health" ${r.shrine ? `data-shrine="${r.shrine}"` : ""}>${tr("❤️ Open health check")}</button>`);
+  const fl = isHi() ? FOLLOW_HI : FOLLOW;
+  const follow = fl[r.intent] ? fl[r.intent](name || shrineName("kedarnath")) : [];
   el.classList.toggle("sos", !!r.sos);
   el.innerHTML = `${esc(r.answer).replace(/\n/g, "<br>")}
     ${r.live && r.live.forecast ? miniForecast(r.live.forecast) : ""}
     ${src ? `<div class="meta">${src}</div>` : ""}
     <div class="msg-tools">
-      <button data-tool="speak" title="Read aloud">🔊 Listen</button><button data-tool="copy" title="Copy answer">📋 Copy</button>
+      <button data-tool="speak" title="${tr("Read aloud")}">${tr("🔊 Listen")}</button><button data-tool="copy" title="${tr("Copy answer")}">${tr("📋 Copy")}</button>
       ${acts.join("")}
     </div>
     ${follow.length ? `<div class="quick" style="margin:8px 0 0">${follow.map(f => `<button type="button" data-follow>${esc(f)}</button>`).join("")}</div>` : ""}`;
@@ -236,9 +275,9 @@ function renderBot(r, el) {
 
 function renderHistory() {
   $("#chat").innerHTML = "";
-  addMsg(esc(GREETING), "bot");
+  addMsg(esc(greeting()), "bot");
   HISTORY.forEach(h => {
-    if (h.role === "user") addMsg((h.voice ? `<span class="via">🎙️ spoken</span>` : "") + esc(h.text), "user");
+    if (h.role === "user") addMsg((h.voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : "") + esc(h.text), "user");
     else { const el = addMsg("", "bot"); renderBot(h.r, el); lastAnswer = h.r; }
   });
 }
@@ -276,7 +315,7 @@ async function ask(text, opts = {}) {
   text = (text || "").trim();
   if (!text || busy) return;
   busy = true;
-  addMsg((opts.voice ? `<span class="via">🎙️ spoken</span>` : "") + esc(text), "user"); $("#q").value = "";
+  addMsg((opts.voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : "") + esc(text), "user"); $("#q").value = "";
   HISTORY.push({ role: "user", text, voice: !!opts.voice });
   const wait = addMsg(`<span class="typing"><i></i><i></i><i></i></span>`, "bot");
   try {
@@ -309,20 +348,25 @@ async function loadForecast() {
   const sid = $("#c-shrine").value || "kedarnath";
   $$("#c-pills button").forEach(b => b.classList.toggle("on", b.dataset.id === sid));
   const f = await api(`/api/forecast/${sid}?start=${$("#c-date").value}&days=7`);
-  $("#c-days").innerHTML = f.days.map((d, k) => `<div class="day" style="animation-delay:${k * 50}ms">${new Date(d.date).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" })}
+  $("#c-days").innerHTML = f.days.map((d, k) => `<div class="day" style="animation-delay:${k * 50}ms">${new Date(d.date).toLocaleDateString(isHi() ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short" })}
      <b>${d.open ? d.visitors.toLocaleString("en-IN") : "–"}</b>${badge(d.band)}</div>`).join("");
   const colors = f.days.map(d => d.ratio > 1 ? "#c0392b" : d.ratio > 0.85 ? "#e07a1f" : d.ratio > 0.6 ? "#d4a017" : "#2e8b57");
   barChart($("#c-chart"), f.days.map(d => d.date.slice(5)), f.days.map(d => d.visitors),
-    { colors, line: f.capacity, lineLabel: `Carrying capacity ${f.capacity.toLocaleString("en-IN")}/day` });
+    { colors, line: f.capacity, lineLabel: isHi() ? `धारण क्षमता ${f.capacity.toLocaleString("en-IN")}/दिन` : `Carrying capacity ${f.capacity.toLocaleString("en-IN")}/day` });
   const peak = f.days.filter(d => d.open).sort((a, b) => b.ratio - a.ratio)[0];
   $("#c-suggest").innerHTML = "";
   if (peak) {
     const s = await api(`/api/forecast/${sid}/suggest?on=${peak.date}`);
-    if (s.needed) $("#c-suggest").innerHTML = `<div class="notice"><b>${peak.date}</b> is forecast as <b>${peak.band}</b>.
-      Lighter dates nearby: ${s.better_dates.map(d => `${d.date} (${d.band}, ~${d.visitors.toLocaleString("en-IN")})`).join(", ")}.
-      ${s.alternative.length ? `Alternative: <b>${s.alternative[0].shrine}</b> (${s.alternative[0].band}).` : ""}</div>`;
+    const dates = (s.better_dates || []).map(d => `${d.date} (${esc(tr(d.band))}, ~${d.visitors.toLocaleString("en-IN")})`).join(", ");
+    const alt = s.alternative && s.alternative.length ? s.alternative[0] : null;
+    if (s.needed) $("#c-suggest").innerHTML = isHi()
+      ? `<div class="notice"><b>${peak.date}</b> को भीड़ <b>${esc(tr(peak.band))}</b> रहने का अनुमान है। आस-पास कम भीड़ वाली तारीखें: ${dates}।
+         ${alt ? `विकल्प: <b>${esc(alt.shrine)}</b> (${esc(tr(alt.band))})।` : ""}</div>`
+      : `<div class="notice"><b>${peak.date}</b> is forecast as <b>${peak.band}</b>. Lighter dates nearby: ${dates}.
+         ${alt ? `Alternative: <b>${esc(alt.shrine)}</b> (${esc(alt.band)}).` : ""}</div>`;
   } else {
-    $("#c-suggest").innerHTML = `<div class="notice">${esc(shrineName(sid))} is closed for the season on these dates. Try a date in the May–November yatra season.</div>`;
+    $("#c-suggest").innerHTML = `<div class="notice">${isHi() ? `इन तिथियों में ${esc(shrineName(sid))} के कपाट बंद हैं। मई–नवंबर के यात्रा सीज़न की कोई तारीख चुनें।`
+      : `${esc(shrineName(sid))} is closed for the season on these dates. Try a date in the May–November yatra season.`}</div>`;
   }
 }
 $("#c-go").onclick = loadForecast;
@@ -331,19 +375,167 @@ onEnter.crowd = async params => { await ready; if (params.get("shrine")) $("#c-s
 window.addEventListener("resize", () => { if (current === "crowd" && $("#c-days").children.length) loadForecast(); });
 
 // ================= ROUTE =================
-async function loadMap(highlight = []) { routeMap($("#map"), await api("/api/risk/network"), highlight); }
-async function checkRoute() {
-  const t = await api(`/api/risk/trip/${$("#r-shrine").value}`);
-  loadMap(t.segments.map(s => s.id));
-  $("#r-out").innerHTML = `<div class="result"><b>Total ${t.total_km} km</b> · worst segment: ${esc(t.worst.from)} → ${esc(t.worst.to)} ${badge(t.worst.level)}
-     ${t.advice ? `<div class="notice">⚠️ Avoid ${esc(t.advice.segment)} for now. Suggested safe halt: <b>${esc(t.advice.halt)}</b>
-       (${t.advice.facilities.join(", ")}).</div>` : ""}</div>
-     <div style="overflow-x:auto"><table class="t" style="margin-top:10px"><tr><th>Segment</th><th>km</th><th>Risk</th><th>Why</th></tr>
-     ${t.segments.map(s => `<tr><td>${esc(s.from)} → ${esc(s.to)}${s.mode === "trek" ? " 🥾" : ""}</td><td>${s.km}</td>
-       <td>${badge(s.level)} ${s.score}</td><td class="muted">${s.factors.map(esc).join("<br>")}</td></tr>`).join("")}</table></div>`;
+const RK = { net: null, selected: null, highlight: [], plan: null };
+const LVC = { Green: "var(--green)", Yellow: "var(--yellow)", Orange: "var(--orange)", Red: "var(--red)" };
+const FAC = { stay: "🛏️", hospital: "🏥", medical: "🩺", fuel: "⛽", police: "👮", screening: "📋", shelter: "⛺" };
+const L = n => (isHi() ? n.hi : n.en);                       // bilingual {en, hi} notes from the API
+const factorsOf = s => (isHi() && s.factors_hi ? s.factors_hi : s.factors);
+const facChips = f => f.map(x => `<span class="fac">${FAC[x] || "•"} ${esc(tr(x))}</span>`).join("");
+const fmtTime = v => new Date(v).toLocaleString(isHi() ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const fmtClock = v => new Date(v).toLocaleTimeString(isHi() ? "hi-IN" : "en-IN", { hour: "2-digit", minute: "2-digit" });
+const hrs = h => { const m = Math.round(h * 60); return isHi() ? `${Math.floor(m / 60)} घं ${m % 60} मि` : `${Math.floor(m / 60)} h ${m % 60} min`; };
+const localInput = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 16);
+
+function redrawMap() { if (RK.net) routeMap($("#map"), RK.net, RK.highlight, { onSelect: id => showSegment(id), selected: RK.selected }); }
+async function drawMap() { RK.net = await api("/api/risk/network"); redrawMap(); }
+
+async function loadRiskOverview() {
+  const [s, adv, cmp] = await Promise.all([api("/api/risk/summary"), api("/api/risk/advisories"), api("/api/risk/compare")]);
+  const H = isHi(), seg = H ? "हिस्से" : "segments";
+  const tiles = ["Green", "Yellow", "Orange", "Red"].map(l => [s.by_level[l], H ? `${seg} (${tr(l)})` : `${l} ${seg}`, LVC[l]])
+    .concat([[s.road_status.length, H ? "सड़क बंद / प्रतिबंधित" : "Closures & restrictions", "var(--night)"],
+             [s.weather_alerts.length, H ? "IMD ज़िला अलर्ट" : "IMD district alerts", "#3b82c4"],
+             [s.advisories, H ? "सक्रिय परामर्श" : "Active advisories", "var(--saff)"]]);
+  $("#rk-kpis").innerHTML = tiles.map(([v, l, c], k) => `<div class="rk-kpi" style="--c:${c};animation-delay:${k * 50}ms"><b>${v}</b><span>${esc(l)}</span></div>`).join("");
+  $("#rk-updated").textContent = (H ? "अपडेट: " : "Updated ") + fmtTime(s.updated_at);
+
+  const items = [];
+  s.road_status.forEach(r => items.push(`<button class="feed-item" data-seg="${r.id}"><span class="fi-ic">${r.status === "Closed" ? "⛔" : "🚧"}</span>
+    <div><b>${esc(r.name)}</b> ${badge(r.status === "Closed" ? "Closed" : r.level)}
+    <small>${esc(tr(r.status))}${r.reason ? " · " + esc(r.reason) : ""}${r.eta ? ` · ${H ? "खुलने का अनुमान" : "Reopening"}: ${esc(r.eta)}` : ""}</small></div></button>`));
+  s.weather_alerts.forEach(w => items.push(`<div class="feed-item"><span class="fi-ic">🌧️</span>
+    <div><b>${esc(w.district)}</b> ${badge(w.level)}<small>${H ? `IMD ${tr(w.level)} अलर्ट · वर्षा ${w.rain_mm} मिमी` : `IMD ${w.level} alert · ${w.rain_mm} mm rain forecast`}</small></div></div>`));
+  adv.forEach(a => items.push(`<div class="feed-item"><span class="fi-ic">📢</span>
+    <div><b>${esc(a.title)}</b><small>${esc(H && a.body_hi ? a.body_hi : a.body_en)}</small>
+    <small>${a.segments.map(x => esc(x.name)).join(", ")} · ${H ? "मान्य" : "valid until"} ${esc(a.valid_until)}</small></div></div>`));
+  $("#rk-feed").innerHTML = items.join("") || `<p class="muted">✅ ${H ? "अभी कोई सड़क बंद, IMD अलर्ट या परामर्श नहीं है।" : "No closures, IMD alerts or advisories right now."}</p>`;
+  $$("#rk-feed [data-seg]").forEach(b => b.onclick = () => showSegment(b.dataset.seg, true));
+
+  $("#rk-compare").innerHTML = cmp.map((c, k) => `<button class="cmp-row" data-shrine="${c.shrine}">
+    <span class="cmp-rank">${k + 1}</span>
+    <div class="cmp-main"><b>${esc(shrineName(c.shrine))}</b><div class="cmp-strip">${c.levels.map(l => `<i style="background:${LVC[l]}" title="${esc(tr(l))}"></i>`).join("")}</div>
+      <small>${c.total_km} ${H ? "किमी" : "km"} · ~${hrs(c.hours)} · ${H ? "सबसे जोखिम" : "worst"}: ${esc(c.worst)}</small></div>
+    ${badge(c.closed ? "Closed" : c.level)}</button>`).join("");
+  $$("#rk-compare .cmp-row").forEach(b => b.onclick = () => { $("#r-shrine").value = b.dataset.shrine; $("#r-start").innerHTML = ""; planTrip(true); });
 }
-$("#r-go").onclick = checkRoute;
-onEnter.route = async params => { await ready; if (params.get("shrine")) { $("#r-shrine").value = params.get("shrine"); checkRoute(); } else loadMap(); };
+
+async function showSegment(id, scroll) {
+  RK.selected = id; redrawMap();
+  const d = await api(`/api/risk/segment/${id}`), H = isHi(), P = d.parts;
+  const scale = Math.max(100, P.alert + P.rain + P.terrain + P.road);
+  const PARTS = [["alert", "IMD alert", "var(--red)"], ["rain", "Rain", "#3b82c4"], ["terrain", "Terrain", "#9a6b3f"], ["road", "Road status", "var(--night)"]];
+  const box = $("#seg-detail");
+  box.className = "seg-full";
+  box.innerHTML = `
+    <div class="seg-head"><div><b>${esc(d.from)} → ${esc(d.to)}</b>
+      <small>${esc(d.district)} · ${d.km} ${H ? "किमी" : "km"} · ${d.mode === "trek" ? "🥾 " + tr("On foot") : "🚗 " + tr("Road")}</small></div>
+      <div class="seg-score" style="--c:${LVC[d.level]}"><b>${d.score}</b><span>/100</span>${badge(d.level)}</div></div>
+    <div class="score-bar" role="img" aria-label="${esc(factorsOf(d).join("; "))}">${PARTS.map(([k, , c]) => P[k] ? `<i style="width:${100 * P[k] / scale}%;background:${c}"></i>` : "").join("")}</div>
+    <div class="score-legend">${PARTS.map(([k, l, c]) => `<span><i style="background:${c}"></i>${esc(tr(l))} +${Math.round(P[k])}</span>`).join("")}</div>
+    <ul class="reasons">${factorsOf(d).map(f => `<li>${esc(f)}</li>`).join("")}</ul>
+    <div class="facts">
+      <div><span>${tr("IMD alert")}</span><b>${d.alert === "None" ? tr("None") : badge(d.alert)}</b>${d.weather ? `<small>${d.weather.rain_mm} ${H ? "मिमी" : "mm"} · ${fmtTime(d.weather.updated_at)}</small>` : ""}</div>
+      <div><span>${tr("Road status")}</span><b>${esc(tr(d.status))}</b>${d.road && (d.road.reason || d.road.eta) ? `<small>${esc(d.road.reason || "")}${d.road.eta ? ` · ${esc(d.road.eta)}` : ""}</small>` : ""}</div>
+      <div><span>${tr("Terrain")}</span><b>${H ? `ढलान श्रेणी ${d.slope}` : `Slope class ${d.slope}`}</b><small>${d.slide_history} ${H ? "पुराने भूस्खलन" : "past slides"}</small></div>
+    </div>
+    ${d.safe_halt ? `<div class="notice">⚠️ ${H ? "सुझाया गया सुरक्षित पड़ाव" : "Suggested safe halt"}: <b>${esc(d.safe_halt.name)}</b></div>` : ""}
+    ${d.advisories.map(a => `<div class="notice">📢 <b>${esc(a.title)}</b>: ${esc(H && a.body_hi ? a.body_hi : a.body_en)}</div>`).join("")}
+    <div class="ends">${d.ends.map(e => `<div><b>📍 ${esc(e.name)}</b><div class="facs">${facChips(e.facilities)}</div></div>`).join("")}</div>
+    <div class="seg-acts">${d.trips.map(t => `<button class="chip-btn" data-plan="${t}">🧭 ${esc(H ? `${shrineName(t)} यात्रा की योजना` : `Plan ${shrineName(t)} trip`)}</button>`).join("")}
+      <button class="chip-btn" data-near>📍 ${esc(tr("Near me"))}</button></div>`;
+  box.querySelectorAll("[data-plan]").forEach(b => b.onclick = () => { $("#r-shrine").value = b.dataset.plan; $("#r-start").innerHTML = ""; planTrip(true); });
+  box.querySelector("[data-near]").onclick = nearMe;
+  if (scroll) $("#seg-card").scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+function nearMe() {
+  const fallback = () => showNearby(+$("#sos-lat").value, +$("#sos-lon").value, true);
+  if (!navigator.geolocation) { toast(isHi() ? "लोकेशन उपलब्ध नहीं; SOS फ़ॉर्म के निर्देशांक इस्तेमाल हो रहे हैं।" : "Location is unavailable; using the coordinates from the SOS form."); return fallback(); }
+  toast("Finding your location…");
+  navigator.geolocation.getCurrentPosition(p => showNearby(p.coords.latitude, p.coords.longitude),
+    () => { toast(isHi() ? "लोकेशन नहीं मिली; SOS फ़ॉर्म के निर्देशांक इस्तेमाल हो रहे हैं।" : "Could not get your location; using the coordinates from the SOS form.", 4500); fallback(); },
+    { timeout: 8000 });
+}
+async function showNearby(lat, lon, approx) {
+  const n = await api(`/api/risk/nearby?lat=${lat}&lon=${lon}`), H = isHi();
+  RK.highlight = n.segments.map(s => s.id); RK.selected = null; redrawMap();
+  const box = $("#seg-detail");
+  box.className = "seg-full";
+  box.innerHTML = `
+    <div class="seg-head"><div><b>📍 ${H ? "आपके पास" : "Near you"}: ${esc(n.node.name)}</b>
+      <small>${n.node.km} ${H ? "किमी दूर" : "km away"} · ${lat.toFixed(3)}, ${lon.toFixed(3)}${approx ? (H ? " (SOS फ़ॉर्म से)" : " (from the SOS form)") : ""}</small></div>
+      ${n.worst ? `<div class="seg-score" style="--c:${LVC[n.worst.level]}"><b>${n.worst.score}</b><span>/100</span></div>` : ""}</div>
+    <div class="feed">${n.segments.map(s => `<button class="feed-item" data-seg="${s.id}"><span class="fi-ic">${s.mode === "trek" ? "🥾" : "🚗"}</span>
+      <div><b>${esc(s.from)} → ${esc(s.to)}</b> ${badge(s.level)}<small>${s.score}/100 · ${esc(factorsOf(s)[0])}</small></div></button>`).join("")}</div>
+    <div class="notice">🏥 ${H ? "नज़दीकी चिकित्सा सहायता" : "Nearest medical help"}: <b>${esc(n.nearest_help.name)}</b> (~${n.nearest_help.km} ${H ? "किमी" : "km"})
+      <div class="facs">${facChips(n.nearest_help.facilities)}</div></div>
+    <a class="btn red sm" href="#alerts" data-sos>🚨 SOS</a> <a class="btn ghost sm" href="tel:112">${tr("📞 Call 112")}</a>`;
+  box.querySelectorAll("[data-seg]").forEach(b => b.onclick = () => showSegment(b.dataset.seg));
+}
+
+async function planTrip(scroll) {
+  await ready;
+  const q = new URLSearchParams({ vehicle: $("#r-vehicle").value });
+  if ($("#r-start").value) q.set("start", $("#r-start").value);
+  if ($("#r-depart").value) q.set("depart", $("#r-depart").value);
+  let p;
+  try { p = await api(`/api/risk/plan/${$("#r-shrine").value}?${q}`); }
+  catch (e) { $("#r-out").innerHTML = `<div class="notice">${esc(e.message)}</div>`; return; }
+  RK.plan = p;
+  $("#r-start").innerHTML = p.start_points.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join("");
+  $("#r-start").value = p.start;
+  RK.highlight = p.legs.map(l => l.id); RK.selected = null; redrawMap();
+  const H = isHi();
+  const items = [`<li class="tl-stop"><span class="dot">🚩</span><div><b>${esc(p.start_name)}</b><small>${H ? "प्रस्थान" : "Depart"} ${fmtTime(p.depart_at)}</small></div></li>`];
+  p.legs.forEach((l, k) => {
+    const h = p.halts.find(x => x.at === l.from_id && x.until === l.depart_at);
+    if (h) items.push(`<li class="tl-halt"><span class="dot">🌙</span><div><b>${H ? "रात्रि विश्राम" : "Overnight halt"}: ${esc(h.name)}</b>
+      <small>${fmtTime(h.from)} → ${fmtTime(h.until)} · ${esc(L(h.reason))}</small><div class="facs">${facChips(h.facilities)}</div></div></li>`);
+    items.push(`<li class="tl-leg" data-seg="${l.id}" style="--c:${LVC[l.level]};animation-delay:${k * 60}ms"><span class="dot"></span><div>
+      <div class="tl-top"><b>${l.mode === "trek" ? "🥾" : "🚗"} ${esc(l.from)} → ${esc(l.to)}</b>${badge(l.level)}</div>
+      <small>${fmtClock(l.depart_at)} → ${fmtClock(l.arrive_at)} · ${l.km} ${H ? "किमी" : "km"} · ${hrs(l.hours)} · ${H ? "जोखिम" : "risk"} ${l.score}/100</small>
+      ${l.notes.map(n => `<div class="tl-note">${esc(L(n))}</div>`).join("")}</div></li>`);
+  });
+  items.push(p.blocked
+    ? `<li class="tl-stop blocked"><span class="dot">⛔</span><div><b>${H ? "सड़क बंद" : "Road closed"}: ${esc(p.blocked.segment)}</b>
+        <small>${H ? "यहाँ रुकें" : "Wait at"} ${esc(p.blocked.halt)}${p.blocked.reason ? ` · ${esc(p.blocked.reason)}` : ""}${p.blocked.eta ? ` · ${H ? "खुलने का अनुमान" : "Reopening"}: ${esc(p.blocked.eta)}` : ""}</small></div></li>`
+    : `<li class="tl-stop end"><span class="dot">🛕</span><div><b>${esc(shrineName(p.shrine))}</b><small>${H ? "पहुँच" : "Arrive"} ${fmtTime(p.arrive_at)}</small></div></li>`);
+  $("#r-out").innerHTML = `
+    <div class="plan-sum">
+      <div><span>${H ? "दूरी" : "Distance"}</span><b>${p.total_km} ${H ? "किमी" : "km"}</b></div>
+      <div><span>${H ? "यात्रा समय" : "Travel time"}</span><b>${hrs(p.drive_hours)}</b></div>
+      <div><span>${H ? "रात्रि विश्राम" : "Overnight halts"}</span><b>${p.halts.length}</b></div>
+      <div><span>${p.blocked ? (H ? "यहाँ तक" : "Reach") : (H ? "पहुँच" : "Arrive")}</span><b>${p.blocked ? esc(p.reached) : fmtTime(p.arrive_at)}</b></div>
+    </div>
+    ${p.warnings.map(w => `<div class="notice">⚠️ ${esc(L(w))}</div>`).join("")}
+    <ol class="timeline">${items.join("")}</ol>
+    <p class="muted">ℹ️ ${esc(L(p.note))}</p>`;
+  $$("#r-out [data-seg]").forEach(li => li.onclick = () => showSegment(li.dataset.seg, true));
+  if (scroll) $("#planner").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+$("#r-go").onclick = () => planTrip();
+$("#r-shrine").onchange = () => { $("#r-start").innerHTML = ""; planTrip(); };
+$("#r-start").onchange = $("#r-vehicle").onchange = $("#r-depart").onchange = () => planTrip();
+$("#rk-near").onclick = nearMe;
+$("#rk-refresh").onclick = async () => {
+  await drawMap(); await loadRiskOverview();
+  if (RK.selected) showSegment(RK.selected);
+  if (RK.plan) planTrip();
+  toast(isHi() ? "मार्ग डेटा अपडेट हुआ" : "Route data refreshed");
+};
+function refreshRouteText() {  // re-render generated route text after a language change
+  if (!RK.net) return;
+  loadRiskOverview(); if (RK.plan) planTrip(); if (RK.selected) showSegment(RK.selected);
+}
+onEnter.route = async params => {
+  await ready;
+  if (!$("#r-depart").value) { const t = new Date(); t.setDate(t.getDate() + 1); t.setHours(6, 0, 0, 0); $("#r-depart").value = localInput(t); }
+  const sh = params.get("shrine");
+  if (sh) { $("#r-shrine").value = sh; $("#r-start").innerHTML = ""; }
+  await drawMap();
+  loadRiskOverview();
+  if (sh || !RK.plan) planTrip(!!sh);
+};
 
 // ================= HEALTH =================
 $("#h-go").onclick = async () => {
@@ -351,9 +543,9 @@ $("#h-go").onclick = async () => {
   const rfs = $$("#health-form .rf").filter(c => c.checked).map(c => c.value);
   const r = await api("/api/health/check", { age: +$("#h-age").value, conditions: conds, red_flags: rfs, fitness: $("#h-fit").value, shrine: $("#h-shrine").value });
   $("#h-out").innerHTML = `<div class="result" style="margin-top:0"><div style="font-size:18px;margin-bottom:8px">${badge(r.category)}</div>
-    ${r.reasons.length ? `<h3>Why</h3><ul>${r.reasons.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
-    <h3>What to do</h3><ul>${r.actions.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
-    <h3>On your route</h3><p>🩺 Screening: ${r.screening_points.join(", ") || "–"}<br>🏥 Medical posts: ${r.medical_posts.join(", ")}</p>
+    ${r.reasons.length ? `<h3>${tr("Why")}</h3><ul>${r.reasons.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
+    <h3>${tr("What to do")}</h3><ul>${r.actions.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <h3>${tr("On your route")}</h3><p>🩺 ${tr("Screening")}: ${r.screening_points.join(", ") || "–"}<br>🏥 ${tr("Medical posts")}: ${r.medical_posts.join(", ")}</p>
     <p class="muted"><i>${esc(r.disclaimer)}</i></p></div>`;
 };
 onEnter.health = async params => { await ready; if (params.get("shrine")) $("#h-shrine").value = params.get("shrine"); };
@@ -363,7 +555,8 @@ $("#s-go").onclick = async () => {
   try {
     const r = await api("/api/subscribe", { phone: $("#s-phone").value, language: $("#s-lang").value, shrine: $("#s-shrine").value,
       start_date: $("#s-from").value, end_date: $("#s-to").value, group_size: +$("#s-group").value, consent: $("#s-consent").checked });
-    $("#s-out").innerHTML = `<div class="result">✅ Subscribed (ID ${r.id}). You will get WhatsApp alerts (SMS fallback) for ${r.segments.length} route segments.</div>`;
+    $("#s-out").innerHTML = `<div class="result">✅ ${isHi() ? `सदस्यता हो गई (ID ${r.id})। आपको मार्ग के ${r.segments.length} हिस्सों के लिए WhatsApp अलर्ट (SMS विकल्प) मिलेंगे।`
+      : `Subscribed (ID ${r.id}). You will get WhatsApp alerts (SMS fallback) for ${r.segments.length} route segments.`}</div>`;
   } catch (e) { $("#s-out").innerHTML = `<div class="notice">${esc(e.message)}</div>`; }
 };
 $("#sos-locate").onclick = () => {
@@ -375,9 +568,9 @@ $("#sos-locate").onclick = () => {
 };
 $("#sos-go").onclick = async () => {
   const r = await api("/api/sos", { lat: +$("#sos-lat").value, lon: +$("#sos-lon").value, contacts: [$("#sos-contact").value] });
-  $("#sos-out").innerHTML = `<div class="result"><b>Nearest help:</b> ${esc(r.nearest_help)} (~${r.nearest_km} km; ${r.nearest_facilities.join(", ")})<br>
-    <a class="btn red" style="margin-top:8px" href="${r.dial}">📞 Call 112</a>
-    <a class="btn" style="margin-top:8px" href="${r.whatsapp_share}" target="_blank" rel="noopener">Share on WhatsApp</a>
+  $("#sos-out").innerHTML = `<div class="result"><b>${tr("Nearest help:")}</b> ${esc(r.nearest_help)} (~${r.nearest_km} ${isHi() ? "किमी" : "km"}; ${r.nearest_facilities.join(", ")})<br>
+    <a class="btn red" style="margin-top:8px" href="${r.dial}">${tr("📞 Call 112")}</a>
+    <a class="btn" style="margin-top:8px" href="${r.whatsapp_share}" target="_blank" rel="noopener">${tr("Share on WhatsApp")}</a>
     <p class="muted">${esc(r.message)}</p></div>`;
 };
 
@@ -430,6 +623,23 @@ $("#credits").innerHTML = CREDITS.map(([t, f, a, l]) =>
 // expose for voice.js
 window.YS = { goto, ask, askFromAnywhere, toast, store, flashSos, get lastAnswer() { return lastAnswer; }, get page() { return current; },
   clearChat: () => $("#clear-chat").click(), shrines: () => SHRINES };
+
+// ---------- language switch: answers, voice and the whole UI follow the picker ----------
+function setLanguage(v, announce) {
+  store.set("lang", v);
+  I18N.apply(v);
+  renderWhy(); renderHeroChips(); renderQuick(); renderHistory();
+  if (SHRINES.length) renderShrineOptions();
+  if (homeLoaded) loadHome(true);
+  if (current === "crowd" && $("#c-days").children.length) loadForecast();
+  refreshRouteText();
+  if ($("#h-out .result")) $("#h-go").click();
+  document.dispatchEvent(new CustomEvent("ys:lang", { detail: I18N.lang }));
+  if (announce) toast(v === "hi" ? "भाषा: हिन्दी। उत्तर और वेबसाइट अब हिन्दी में हैं।" : v === "en" ? "Language: English" : "Language: Auto (answers follow the language you write in)");
+}
+$("#lang").value = store.get("lang", "");
+$("#lang").onchange = () => setLanguage($("#lang").value, true);
+setLanguage($("#lang").value, false);
 
 route();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("/static/sw.js").catch(() => {});
