@@ -1,0 +1,10 @@
+{
+  "_note": "Carrying-capacity values from the 2025 study reported by ETV Bharat (May 2026). Hemkund Sahib value is an assumed planning figure for the prototype.",
+  "shrines": [
+    {"id": "kedarnath", "name": "Kedarnath", "name_hi": "केदारनाथ", "district": "Rudraprayag", "altitude_m": 3583, "capacity": 13111, "season_share": 0.33, "base_segment": "gaurikund_kedarnath"},
+    {"id": "badrinath", "name": "Badrinath", "name_hi": "बद्रीनाथ", "district": "Chamoli", "altitude_m": 3133, "capacity": 15778, "season_share": 0.31, "base_segment": "joshimath_badrinath"},
+    {"id": "gangotri", "name": "Gangotri", "name_hi": "गंगोत्री", "district": "Uttarkashi", "altitude_m": 3100, "capacity": 8178, "season_share": 0.15, "base_segment": "uttarkashi_gangotri"},
+    {"id": "yamunotri", "name": "Yamunotri", "name_hi": "यमुनोत्री", "district": "Uttarkashi", "altitude_m": 3293, "capacity": 6160, "season_share": 0.14, "base_segment": "janki_chatti_yamunotri"},
+    {"id": "hemkund", "name": "Hemkund Sahib", "name_hi": "हेमकुंड साहिब", "district": "Chamoli", "altitude_m": 4632, "capacity": 5000, "season_share": 0.07, "base_segment": "govindghat_hemkund"}
+  ]
+}

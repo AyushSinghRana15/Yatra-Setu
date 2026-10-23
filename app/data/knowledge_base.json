@@ -1,0 +1,122 @@
+{
+  "_note": "Demo knowledge base compiled from publicly available yatra guidance for the prototype. Every entry must be re-verified against the current official advisory before production use.",
+  "documents": [
+    {
+      "id": "kb-registration",
+      "topic": "registration",
+      "title": "Yatra registration is mandatory",
+      "source": "Uttarakhand Tourism - Registration & Tourist Care portal",
+      "updated": "2026-04-10",
+      "en": "Registration is mandatory for the Char Dham and Hemkund Sahib yatra. Register online on the official Registration and Tourist Care portal of Uttarakhand Tourism or through the Tourist Care Uttarakhand app, using a valid photo ID such as Aadhaar. Offline registration counters operate at Haridwar, Rishikesh and other points on the route. Carry the registration QR code (printed or on the phone); it is checked at check-posts.",
+      "hi": "चारधाम और हेमकुंड साहिब यात्रा के लिए पंजीकरण अनिवार्य है। उत्तराखंड पर्यटन के आधिकारिक रजिस्ट्रेशन एवं टूरिस्ट केयर पोर्टल या टूरिस्ट केयर उत्तराखंड ऐप पर आधार जैसे वैध फोटो पहचान पत्र से ऑनलाइन पंजीकरण करें। हरिद्वार, ऋषिकेश और मार्ग के अन्य स्थानों पर ऑफलाइन पंजीकरण काउंटर भी हैं। पंजीकरण का क्यूआर कोड साथ रखें, इसे चेक-पोस्ट पर जांचा जाता है।"
+    },
+    {
+      "id": "kb-health-screening",
+      "topic": "health",
+      "title": "Health screening for pilgrims aged 50 and above",
+      "source": "Health Department, Govt. of Uttarakhand (yatra health advisory)",
+      "updated": "2026-04-15",
+      "en": "Health screening is mandatory for pilgrims aged 50 years and above. Screening points are set up on the routes, for example at Sonprayag on the Kedarnath route. Get a medical check-up before travelling, carry your regular medicines and prescriptions, and do not start the trek if you have chest pain, breathlessness or have had major surgery recently.",
+      "hi": "50 वर्ष और उससे अधिक आयु के तीर्थयात्रियों के लिए स्वास्थ्य जांच अनिवार्य है। मार्ग पर स्क्रीनिंग पॉइंट बनाए गए हैं, जैसे केदारनाथ मार्ग पर सोनप्रयाग में। यात्रा से पहले मेडिकल जांच कराएं, अपनी नियमित दवाइयां और पर्चे साथ रखें, और सीने में दर्द, सांस फूलने या हाल में बड़ी सर्जरी होने पर ट्रेक शुरू न करें।"
+    },
+    {
+      "id": "kb-acclimatisation",
+      "topic": "health",
+      "title": "Acclimatisation and altitude safety",
+      "source": "Health Department, Govt. of Uttarakhand (yatra health advisory)",
+      "updated": "2026-04-15",
+      "en": "The shrines are at high altitude: Kedarnath about 3,583 m, Badrinath about 3,133 m, Yamunotri about 3,293 m, Gangotri about 3,100 m and Hemkund Sahib about 4,632 m. Spend at least one night at an intermediate halt before the trek, walk slowly with regular breaks, drink enough water, avoid alcohol and smoking, and keep warm clothes. Headache, nausea, dizziness or breathlessness can be signs of altitude sickness: stop climbing and visit the nearest medical relief post.",
+      "hi": "धाम ऊंचाई पर स्थित हैं: केदारनाथ लगभग 3,583 मीटर, बद्रीनाथ लगभग 3,133 मीटर, यमुनोत्री लगभग 3,293 मीटर, गंगोत्री लगभग 3,100 मीटर और हेमकुंड साहिब लगभग 4,632 मीटर। ट्रेक से पहले बीच के किसी पड़ाव पर कम से कम एक रात रुकें, धीरे चलें और बीच-बीच में आराम करें, पर्याप्त पानी पिएं, शराब और धूम्रपान से बचें और गर्म कपड़े रखें। सिरदर्द, जी मिचलाना, चक्कर या सांस फूलना ऊंचाई की बीमारी के लक्षण हो सकते हैं: चढ़ाई रोकें और नजदीकी चिकित्सा राहत केंद्र जाएं।"
+    },
+    {
+      "id": "kb-kedarnath-trek",
+      "topic": "route",
+      "title": "Kedarnath trek from Gaurikund",
+      "source": "District Administration Rudraprayag (route information)",
+      "updated": "2026-04-20",
+      "en": "Vehicles go up to Sonprayag; shuttle jeeps run from Sonprayag to Gaurikund. The trek from Gaurikund to Kedarnath is about 16 km and usually takes 6 to 8 hours on foot. Ponies, palkis and pithus can be booked at authorised counters; helicopter services operate from Phata, Sersi and Guptkashi helipads and must be booked only through the official helicopter booking website. Start early in the morning and avoid trekking after dark.",
+      "hi": "वाहन सोनप्रयाग तक जाते हैं; सोनप्रयाग से गौरीकुंड तक शटल जीप चलती हैं। गौरीकुंड से केदारनाथ का पैदल मार्ग लगभग 16 किलोमीटर है और सामान्यतः 6 से 8 घंटे लगते हैं। घोड़ा, पालकी और पिट्ठू अधिकृत काउंटरों पर बुक करें; हेलीकॉप्टर सेवा फाटा, सेरसी और गुप्तकाशी हेलीपैड से चलती है और केवल आधिकारिक हेलीकॉप्टर बुकिंग वेबसाइट से ही बुक करें। सुबह जल्दी चढ़ाई शुरू करें और अंधेरे के बाद ट्रेक न करें।"
+    },
+    {
+      "id": "kb-helicopter-fraud",
+      "topic": "booking",
+      "title": "Beware of fake helicopter booking websites",
+      "source": "Uttarakhand Police cyber advisory",
+      "updated": "2026-04-05",
+      "en": "Helicopter tickets for Kedarnath are sold only through the official booking website notified by the Uttarakhand Civil Aviation Development Authority. Do not pay on links received through social media, WhatsApp forwards or unknown phone numbers. If you are cheated, report it on the national cyber crime helpline 1930.",
+      "hi": "केदारनाथ के हेलीकॉप्टर टिकट केवल उत्तराखंड नागरिक उड्डयन विकास प्राधिकरण द्वारा अधिसूचित आधिकारिक वेबसाइट से ही बिकते हैं। सोशल मीडिया, व्हाट्सऐप फॉरवर्ड या अनजान नंबरों से मिले लिंक पर भुगतान न करें। ठगी होने पर राष्ट्रीय साइबर अपराध हेल्पलाइन 1930 पर शिकायत करें।"
+    },
+    {
+      "id": "kb-what-to-carry",
+      "topic": "preparation",
+      "title": "What to carry",
+      "source": "Uttarakhand Tourism traveller advisory",
+      "updated": "2026-04-10",
+      "en": "Carry a photo ID and registration QR code, warm layers, a raincoat or poncho, sturdy trekking shoes, a torch, a reusable water bottle, dry snacks, personal medicines, a basic first-aid kit and a power bank. Keep some cash because digital payments may not work in low-network areas. Do not litter; carry your waste back.",
+      "hi": "फोटो पहचान पत्र और पंजीकरण क्यूआर कोड, गर्म कपड़े, रेनकोट या पोंचो, मजबूत ट्रेकिंग जूते, टॉर्च, पानी की बोतल, सूखा नाश्ता, निजी दवाइयां, प्राथमिक चिकित्सा किट और पावर बैंक साथ रखें। कुछ नकद पैसे रखें क्योंकि कम नेटवर्क वाले स्थानों पर डिजिटल भुगतान काम नहीं कर सकता। कूड़ा न फैलाएं, अपना कचरा वापस साथ लाएं।"
+    },
+    {
+      "id": "kb-monsoon",
+      "topic": "weather",
+      "title": "Travelling in the monsoon",
+      "source": "USDMA / IMD guidance for travellers",
+      "updated": "2026-06-20",
+      "en": "During the monsoon (roughly July to mid-September) heavy rain can trigger landslides and close roads at short notice. Check the IMD district warning and road status before starting each day, avoid driving at night, keep a buffer of one or two days in your plan, and follow instructions from police and district administration. If a road is closed, stay at the nearest town with facilities instead of waiting near the debris.",
+      "hi": "मानसून (लगभग जुलाई से सितंबर मध्य) में भारी बारिश से भूस्खलन हो सकता है और सड़कें अचानक बंद हो सकती हैं। हर दिन यात्रा शुरू करने से पहले मौसम विभाग की जिला चेतावनी और सड़क की स्थिति देखें, रात में यात्रा न करें, योजना में एक-दो दिन अतिरिक्त रखें और पुलिस व जिला प्रशासन के निर्देश मानें। सड़क बंद होने पर मलबे के पास इंतजार करने के बजाय सुविधाओं वाले नजदीकी कस्बे में रुकें।"
+    },
+    {
+      "id": "kb-emergency",
+      "topic": "emergency",
+      "title": "Emergency numbers",
+      "source": "Government of India / Uttarakhand Police",
+      "updated": "2026-04-01",
+      "en": "In any emergency dial 112 (integrated emergency number). For medical emergencies the ambulance number 108 can also be used. Note the nearest police post and medical relief post on your route. Share your live location with family when travelling in remote stretches.",
+      "hi": "किसी भी आपात स्थिति में 112 डायल करें (एकीकृत आपातकालीन नंबर)। चिकित्सा आपात स्थिति में एम्बुलेंस नंबर 108 भी उपयोग कर सकते हैं। अपने मार्ग पर नजदीकी पुलिस चौकी और चिकित्सा राहत केंद्र की जानकारी रखें। दूर-दराज़ के रास्तों पर परिवार के साथ अपनी लाइव लोकेशन साझा करें।"
+    },
+    {
+      "id": "kb-best-time",
+      "topic": "crowd",
+      "title": "Best time to visit and crowd levels",
+      "source": "Uttarakhand Tourism traveller advisory",
+      "updated": "2026-04-10",
+      "en": "The shrines usually open between late April and May and close around October-November. Crowds are heaviest in the first weeks after opening, in May-June and on weekends and holidays. September-October usually has fewer pilgrims and clear weather after the monsoon. Use the YatraSetu crowd forecast to pick a lighter day.",
+      "hi": "धाम सामान्यतः अप्रैल के अंत से मई के बीच खुलते हैं और अक्टूबर-नवंबर के आसपास बंद होते हैं। कपाट खुलने के बाद के पहले हफ्तों, मई-जून और सप्ताहांत व छुट्टियों में सबसे अधिक भीड़ होती है। सितंबर-अक्टूबर में मानसून के बाद आमतौर पर भीड़ कम और मौसम साफ रहता है। कम भीड़ वाला दिन चुनने के लिए यात्रासेतु का भीड़ पूर्वानुमान देखें।"
+    },
+    {
+      "id": "kb-vehicles",
+      "topic": "route",
+      "title": "Vehicle and driving rules on hill roads",
+      "source": "Uttarakhand Transport Department / Police",
+      "updated": "2026-04-12",
+      "en": "Commercial vehicles on the yatra route need a valid green card and trip card issued by the Transport Department. Drivers should be experienced on hill roads, avoid driving at night, give way to uphill traffic on narrow stretches and follow one-way traffic plans announced by the police during peak days.",
+      "hi": "यात्रा मार्ग पर व्यावसायिक वाहनों के लिए परिवहन विभाग द्वारा जारी वैध ग्रीन कार्ड और ट्रिप कार्ड आवश्यक है। चालक पहाड़ी सड़कों पर अनुभवी हों, रात में वाहन न चलाएं, संकरे स्थानों पर चढ़ाई वाले वाहनों को रास्ता दें और भीड़ वाले दिनों में पुलिस द्वारा घोषित वन-वे यातायात योजना का पालन करें।"
+    },
+    {
+      "id": "kb-badrinath",
+      "topic": "route",
+      "title": "Reaching Badrinath and Hemkund Sahib",
+      "source": "District Administration Chamoli (route information)",
+      "updated": "2026-04-20",
+      "en": "Badrinath is reachable by road via Rudraprayag, Karnaprayag, Chamoli and Joshimath. For Hemkund Sahib, drive to Govindghat, then trek about 13 km to Ghangaria and a further 6 km to Hemkund Sahib; the Valley of Flowers trek also starts from Ghangaria. Hemkund Sahib is at about 4,632 m, so plan a night at Ghangaria.",
+      "hi": "बद्रीनाथ सड़क मार्ग से रुद्रप्रयाग, कर्णप्रयाग, चमोली और जोशीमठ होते हुए पहुंचा जा सकता है। हेमकुंड साहिब के लिए गोविंदघाट तक वाहन से जाएं, फिर लगभग 13 किलोमीटर पैदल घांघरिया और वहां से 6 किलोमीटर आगे हेमकुंड साहिब। फूलों की घाटी का ट्रेक भी घांघरिया से शुरू होता है। हेमकुंड साहिब लगभग 4,632 मीटर पर है, इसलिए घांघरिया में एक रात रुकने की योजना बनाएं।"
+    },
+    {
+      "id": "kb-gangotri-yamunotri",
+      "topic": "route",
+      "title": "Reaching Yamunotri and Gangotri",
+      "source": "District Administration Uttarkashi (route information)",
+      "updated": "2026-04-20",
+      "en": "Yamunotri is reached by road via Barkot to Janki Chatti, followed by a trek of about 6 km. Gangotri is reachable by road via Uttarkashi and Harsil. Traditionally the yatra is done from west to east: Yamunotri, Gangotri, Kedarnath and then Badrinath.",
+      "hi": "यमुनोत्री के लिए बड़कोट होते हुए जानकी चट्टी तक सड़क मार्ग से जाएं, फिर लगभग 6 किलोमीटर पैदल चढ़ाई करें। गंगोत्री सड़क मार्ग से उत्तरकाशी और हर्षिल होते हुए पहुंचा जा सकता है। परंपरागत रूप से यात्रा पश्चिम से पूर्व की ओर की जाती है: यमुनोत्री, गंगोत्री, केदारनाथ और फिर बद्रीनाथ।"
+    },
+    {
+      "id": "kb-eco",
+      "topic": "preparation",
+      "title": "Eco-friendly yatra",
+      "source": "Uttarakhand Forest Department / Tourism",
+      "updated": "2026-04-10",
+      "en": "Single-use plastic is discouraged on the yatra routes. Carry a refillable bottle, use dustbins at halts, do not feed wild animals and respect local customs and temple rules. Keeping the Himalaya clean helps keep the routes safe and open for everyone.",
+      "hi": "यात्रा मार्गों पर सिंगल-यूज़ प्लास्टिक के उपयोग से बचें। दोबारा भरी जा सकने वाली बोतल रखें, पड़ावों पर कूड़ेदान का उपयोग करें, जंगली जानवरों को खाना न दें और स्थानीय परंपराओं व मंदिर नियमों का सम्मान करें। हिमालय को स्वच्छ रखना सभी के लिए मार्गों को सुरक्षित और खुला रखने में मदद करता है।"
+    }
+  ]
+}

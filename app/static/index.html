@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YatraSetu AI – Safe Yatra Assistant</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="manifest" href="/static/manifest.json">
+</head>
+<body>
+<header class="top">
+  <div class="logo">YS</div>
+  <div><h1>YatraSetu AI</h1><p>Multilingual safe-travel &amp; crowd advisory assistant for Uttarakhand</p></div>
+  <div class="right">
+    <select id="lang" style="width:auto;padding:5px 8px">
+      <option value="">Auto language</option><option value="en">English</option><option value="hi">हिन्दी</option>
+    </select>
+    &nbsp; <a href="/admin">Officials' dashboard →</a>
+  </div>
+</header>
+<nav class="tabs">
+  <button data-tab="chat" class="active">💬 Assistant</button>
+  <button data-tab="crowd">📊 Crowd forecast</button>
+  <button data-tab="route">🛣️ Route risk</button>
+  <button data-tab="health">❤️ Health check</button>
+  <button data-tab="alerts">🔔 Trip alerts &amp; SOS</button>
+</nav>
+<main>
+  <!-- Assistant -->
+  <section class="tab active" id="tab-chat">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Ask YatraSetu</h2>
+        <div class="chat" id="chat"></div>
+        <div class="quick" id="quick"></div>
+        <div class="chatbar">
+          <input id="q" placeholder="Ask in English or हिन्दी, e.g. Is Kedarnath crowded this week?">
+          <button class="btn" id="send">Send</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>How answers are produced</h2>
+        <p class="muted">Every answer is <b>grounded</b> in approved official content or live data, with the source and
+          last-updated date shown. Emergencies bypass the AI model and return safety instructions immediately.</p>
+        <h3>Pipeline</h3>
+        <ol class="muted" style="line-height:1.8;padding-left:18px">
+          <li>Language detection (script-based) – Bhashini for other Indian languages</li>
+          <li>Intent classification (TF-IDF + logistic regression) with emergency override</li>
+          <li>Hybrid retrieval over the bilingual knowledge base</li>
+          <li>Live enrichment: crowd forecast &amp; route-risk services</li>
+          <li>Grounded answer (LLM if configured, else extractive) + guardrails</li>
+        </ol>
+        <h3>Last response details</h3>
+        <div id="details" class="muted">Ask a question to see intent, confidence and sources.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Crowd -->
+  <section class="tab" id="tab-crowd">
+    <div class="card">
+      <h2>7-day crowd forecast vs. carrying capacity</h2>
+      <div class="row">
+        <div><label>Shrine</label><select id="c-shrine"></select></div>
+        <div><label>Start date</label><input type="date" id="c-date"></div>
+        <div style="flex:0"><button class="btn" id="c-go">Forecast</button></div>
+      </div>
+      <div class="daycards" id="c-days"></div>
+      <canvas id="c-chart" style="width:100%;height:260px;margin-top:14px"></canvas>
+      <div id="c-suggest"></div>
+      <p class="muted">Bands: Low &lt; 60% of capacity · Moderate 60–85% · High 85–100% · Over capacity &gt; 100%.
+        Capacity values from the 2025 carrying-capacity study. Model: gradient-boosted trees trained on past seasons.</p>
+    </div>
+  </section>
+
+  <!-- Route -->
+  <section class="tab" id="tab-route">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Live route-risk map</h2>
+        <svg id="map" style="width:100%;height:auto"></svg>
+        <p class="muted">Hover a segment to see why it has that risk level. Scores combine IMD alerts, forecast rain,
+          official road status and terrain susceptibility.</p>
+      </div>
+      <div class="card">
+        <h2>Check my route</h2>
+        <label>Destination</label><select id="r-shrine"></select>
+        <div style="margin-top:10px"><button class="btn" id="r-go">Check route</button></div>
+        <div id="r-out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Health -->
+  <section class="tab" id="tab-health">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Pre-trip health readiness self-check</h2>
+        <div class="row">
+          <div><label>Age</label><input type="number" id="h-age" value="62" min="1" max="110"></div>
+          <div><label>Destination</label><select id="h-shrine"></select></div>
+          <div><label>Walking fitness</label><select id="h-fit"><option value="high">Can walk 10 km easily</option>
+            <option value="medium" selected>Can walk 5 km</option><option value="low">Struggle to walk 5 km</option></select></div>
+        </div>
+        <label>Known conditions</label>
+        <div class="check"><input type="checkbox" value="bp" checked> High blood pressure</div>
+        <div class="check"><input type="checkbox" value="diabetes"> Diabetes</div>
+        <div class="check"><input type="checkbox" value="heart"> Heart disease</div>
+        <div class="check"><input type="checkbox" value="asthma"> Asthma / lung disease</div>
+        <div class="check"><input type="checkbox" value="pregnancy"> Pregnancy</div>
+        <label>Right now, do you have…</label>
+        <div class="check"><input type="checkbox" class="rf" value="chest_pain"> Chest pain or pressure</div>
+        <div class="check"><input type="checkbox" class="rf" value="breathless_rest"> Breathlessness at rest</div>
+        <div class="check"><input type="checkbox" class="rf" value="recent_surgery"> Surgery / heart attack in last 6 months</div>
+        <div style="margin-top:12px"><button class="btn saff" id="h-go">Check readiness</button></div>
+      </div>
+      <div class="card"><h2>Your readiness plan</h2><div id="h-out" class="muted">Fill in the form to get guidance.</div></div>
+    </div>
+  </section>
+
+  <!-- Alerts & SOS -->
+  <section class="tab" id="tab-alerts">
+    <div class="grid g2">
+      <div class="card">
+        <h2>Subscribe my trip for alerts</h2>
+        <div class="row">
+          <div><label>Mobile (WhatsApp)</label><input id="s-phone" value="9876543210"></div>
+          <div><label>Alert language</label><select id="s-lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
+        </div>
+        <div class="row">
+          <div><label>Destination</label><select id="s-shrine"></select></div>
+          <div><label>Group size</label><input type="number" id="s-group" value="4"></div>
+        </div>
+        <div class="row">
+          <div><label>From</label><input type="date" id="s-from"></div>
+          <div><label>To</label><input type="date" id="s-to"></div>
+        </div>
+        <div class="check" style="margin-top:10px"><input type="checkbox" id="s-consent"> I agree that YatraSetu stores my trip
+          details only to send safety alerts, and deletes them 90 days after the trip.</div>
+        <div style="margin-top:10px"><button class="btn" id="s-go">Subscribe</button></div>
+        <div id="s-out"></div>
+      </div>
+      <div class="card">
+        <h2>Emergency SOS</h2>
+        <p class="muted">Shares your location with family and opens the 112 dialler. Works with the location of your phone.</p>
+        <div class="row">
+          <div><label>Latitude</label><input id="sos-lat" value="30.6600"></div>
+          <div><label>Longitude</label><input id="sos-lon" value="79.0300"></div>
+        </div>
+        <label>Emergency contact</label><input id="sos-contact" value="+919812345678">
+        <div style="margin-top:12px"><button class="btn red" id="sos-go">🚨 SOS</button></div>
+        <div id="sos-out"></div>
+        <h3>Offline emergency card</h3>
+        <div class="notice">Emergency 112 · Ambulance 108 · Cyber fraud 1930 · Save this page to your home screen: the card
+          stays available without network.</div>
+      </div>
+    </div>
+  </section>
+  <div class="footer">YatraSetu AI prototype · Minor Project, Department of CSE, Roorkee Institute of Technology · Demo data, verify with official sources</div>
+</main>
+<script src="/static/charts.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

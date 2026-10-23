@@ -1,0 +1,29 @@
+{
+  "gold_questions": 40,
+  "retrieval_top1_accuracy": 87.5,
+  "retrieval_top3_accuracy": 95.0,
+  "retrieval_top1_by_language": {
+    "en": 88.9,
+    "hi": 84.6
+  },
+  "intent_accuracy": 85.0,
+  "emergency_recall": 100.0,
+  "emergency_false_alarms_on_gold": 1,
+  "in_domain_answer_rate": 100.0,
+  "off_topic_rejection_rate": 80.0,
+  "avg_retrieval_plus_intent_ms": 1.29,
+  "forecast": {
+    "test_season": 2025,
+    "train_rows": 2670,
+    "test_rows": 841,
+    "mape_normal_days": 13.3,
+    "mape_by_shrine": {
+      "kedarnath": 13.8,
+      "badrinath": 12.6,
+      "gangotri": 15.6,
+      "yamunotri": 13.0,
+      "hemkund": 10.8
+    },
+    "band_accuracy": 80.3
+  }
+}

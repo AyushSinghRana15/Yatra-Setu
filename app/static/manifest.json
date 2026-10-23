@@ -1,0 +1,9 @@
+{
+  "name": "YatraSetu AI",
+  "short_name": "YatraSetu",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f5f7f8",
+  "theme_color": "#1f4e5f",
+  "description": "Multilingual safe-travel and crowd advisory assistant for Uttarakhand"
+}
