@@ -8,12 +8,12 @@ from datetime import date, timedelta  # noqa: E402
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from app import alerts, db  # noqa: E402
+from app import alerts, db, llm  # noqa: E402
 from app.forecast import band, forecaster  # noqa: E402
 from app.health import assess  # noqa: E402
 from app.intent import classifier  # noqa: E402
 from app.language import detect_language  # noqa: E402
-from app.llm import numbers_grounded  # noqa: E402
+from app.llm import numbers_grounded, redact  # noqa: E402
 from app.main import app  # noqa: E402
 from app.risk import SEGMENTS, safe_halt, score_segment  # noqa: E402
 
@@ -89,6 +89,43 @@ def test_numeric_guardrail():
     p = ["The trek is about 16 km and takes 6 to 8 hours."]
     assert numbers_grounded("It is about 16 km.", p)
     assert not numbers_grounded("It is about 22 km.", p)
+
+
+# ---------- LangChain + OpenRouter integration ----------
+def test_pii_redaction_before_llm_call():
+    assert redact("call 9876543210 or mail me@example.com") == "call [PHONE] or mail [EMAIL]"
+
+
+def test_generation_degrades_offline_without_key(monkeypatch):
+    monkeypatch.setattr(llm, "provider_config", lambda: None)
+    assert not llm.enabled()
+    assert llm.generate("How long is the trek?", ["The trek is 16 km."]) is None
+
+
+def test_langchain_chain_accepts_grounded_answer(monkeypatch):
+    from langchain_core.runnables import RunnableLambda
+
+    cfg = {"provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "model": "test/model"}
+    monkeypatch.setattr(llm, "provider_config", lambda: cfg)
+    monkeypatch.setattr(llm, "_chain_for", lambda _cfg: RunnableLambda(lambda _in: "The trek is 16 km [1]."))
+    llm.reset_cache()
+    assert llm.generate("How long is the trek?", ["The trek from Gaurikund is 16 km."]) == "The trek is 16 km [1]."
+
+
+def test_langchain_guardrail_rejects_invented_number(monkeypatch):
+    from langchain_core.runnables import RunnableLambda
+
+    cfg = {"provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "model": "test/model"}
+    monkeypatch.setattr(llm, "provider_config", lambda: cfg)
+    monkeypatch.setattr(llm, "_chain_for", lambda _cfg: RunnableLambda(lambda _in: "The trek is 22 km [1]."))
+    llm.reset_cache()
+    assert llm.generate("How long is the trek?", ["The trek from Gaurikund is 16 km."]) is None
+
+
+def test_ai_status_endpoint_hides_secrets():
+    r = client.get("/api/ai/status").json()
+    assert r["framework"].startswith("LangChain")
+    assert "api_key" not in r and "api_key" not in str(r)
 
 
 # ---------- API ----------

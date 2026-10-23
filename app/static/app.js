@@ -25,6 +25,13 @@ QUICK.forEach(q => { const b = document.createElement("button"); b.textContent =
 function addMsg(html, cls) { const d = document.createElement("div"); d.className = "msg " + cls; d.innerHTML = html; $("#chat").appendChild(d); $("#chat").scrollTop = 1e6; return d; }
 addMsg("Namaste! 🙏 I am YatraSetu. Ask me about crowds, routes, registration, health or safety on the Char Dham yatra – in English or हिन्दी.", "bot");
 
+// AI provider badge: OpenRouter + LangChain when configured, extractive otherwise.
+api("/api/ai/status").then(s => {
+  $("#ai-status").innerHTML = s.enabled
+    ? `🤖 <b>${esc(s.mode)}</b> · ${esc(s.provider)} / ${esc(s.model)} · ${esc(s.framework)}`
+    : `🔒 <b>extractive</b> · offline mode. ${esc(s.detail)}`;
+}).catch(() => { $("#ai-status").textContent = "AI status unavailable – offline extractive mode is still active."; });
+
 async function ask(text) {
   if (!text.trim()) return;
   addMsg(esc(text), "user"); $("#q").value = "";
