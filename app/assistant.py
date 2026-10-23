@@ -127,7 +127,7 @@ def respond(text: str, lang_override: str | None = None):
     if top >= RETRIEVAL_THRESHOLD and in_domain:
         doc, view_lang, _ = hits[0]
         passages = [h[0].text.get(work_lang) or h[0].text["en"] for h in hits if h[2] >= max(RETRIEVAL_THRESHOLD, 0.7 * top)]
-        generated = llm.generate(query, passages)
+        generated = llm.generate(query, passages, work_lang)
         if generated:
             parts.append(generated); result["mode"] = "llm-rag"
         else:

@@ -70,7 +70,7 @@ function lineChart(canvas, labels, series, opts = {}) {
   });
 }
 
-function routeMap(svg, data, highlight = []) {
+function routeMap(svg, data, highlight = [], opts = {}) {
   const ns = "http://www.w3.org/2000/svg";
   svg.innerHTML = "";
   svg.setAttribute("viewBox", "0 0 900 470");
@@ -85,6 +85,18 @@ function routeMap(svg, data, highlight = []) {
       "stroke-dasharray": s.mode === "trek" ? "2 9" : "none" });
     const t = document.createElementNS(ns, "title");
     t.textContent = `${s.from} → ${s.to}: ${s.level} (${s.score}/100)\n${s.factors.join("\n")}`; line.appendChild(t);
+    if (opts.onSelect) {  // wide transparent hit area so thin segments are easy to click or tap
+      if (s.id === opts.selected) svg.insertBefore(el("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: COLORS.ink,
+        "stroke-width": 15, "stroke-linecap": "round", opacity: 0.22 }), line);
+      line.style.cursor = "pointer";
+      line.addEventListener("click", () => opts.onSelect(s.id));
+      const hit = el("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, stroke: "transparent", "stroke-width": 22, "stroke-linecap": "round",
+        style: "cursor:pointer", "data-seg": s.id });
+      hit.appendChild(t.cloneNode(true));
+      hit.addEventListener("click", () => opts.onSelect(s.id));
+      hit.addEventListener("mouseenter", () => line.setAttribute("stroke-width", 9));
+      hit.addEventListener("mouseleave", () => line.setAttribute("stroke-width", hl ? 7 : 3));
+    }
     if (s.status !== "Open") el("text", { x: (a.x + b.x) / 2 + 6, y: (a.y + b.y) / 2 - 6, fill: COLORS.red, "font-size": 12, "font-weight": 700 }, s.status.toUpperCase());
   });
   Object.entries(data.nodes).forEach(([id, n]) => {

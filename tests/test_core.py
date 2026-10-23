@@ -4,7 +4,7 @@ import tempfile
 
 os.environ["YATRASETU_DB"] = os.path.join(tempfile.mkdtemp(), "test.db")
 
-from datetime import date, timedelta  # noqa: E402
+from datetime import date, datetime, timedelta  # noqa: E402
 
 from fastapi.testclient import TestClient  # noqa: E402
 
@@ -15,7 +15,7 @@ from app.intent import classifier  # noqa: E402
 from app.language import detect_language  # noqa: E402
 from app.llm import numbers_grounded, redact  # noqa: E402
 from app.main import app  # noqa: E402
-from app.risk import SEGMENTS, safe_halt, score_segment  # noqa: E402
+from app.risk import NIGHT_END, NIGHT_START, SEGMENTS, plan_trip, safe_halt, score_parts, score_segment  # noqa: E402
 
 client = TestClient(app)
 
@@ -73,6 +73,54 @@ def test_safe_halt_has_stay_and_medical():
     assert "stay" in h["facilities"] and ({"medical", "hospital"} & set(h["facilities"]))
 
 
+def test_score_parts_add_up_and_are_bilingual():
+    score, _, en, hi, parts = score_parts(SEGMENTS["chamoli_joshimath"], "Orange", 90, "Restricted")
+    assert abs(sum(parts.values()) - score) <= 1 and len(en) == len(hi) == 4
+    assert score_segment(SEGMENTS["chamoli_joshimath"], "Orange", 90, "Restricted")[0] == score
+
+
+def test_plan_halts_overnight_instead_of_night_driving():
+    db.init_db()
+    p = plan_trip("kedarnath", depart=datetime(2026, 5, 20, 18, 0))
+    assert p["halts"] and p["arrive_at"]
+    for leg in p["legs"]:
+        if leg["mode"] == "road":   # no road leg starts or ends inside the night window
+            for t in (leg["depart_at"], leg["arrive_at"]):
+                h = datetime.fromisoformat(t).hour
+                assert not (h >= NIGHT_START or h < NIGHT_END)
+
+
+def test_plan_stops_at_safe_halt_before_closed_road():
+    db.init_db()
+    alerts.set_road_status("barkot_uttarkashi", "Closed", "landslide", "Tomorrow", "test")
+    try:
+        p = plan_trip("gangotri", depart=datetime(2026, 5, 20, 6, 0))
+        assert p["blocked"] and p["arrive_at"] is None
+        assert all(leg["id"] != "barkot_uttarkashi" for leg in p["legs"])
+        assert p["blocked"]["halt"] == "Barkot" and p["legs"][-1]["to"] == "Barkot"
+    finally:
+        alerts.set_road_status("barkot_uttarkashi", "Open", None, None, "test")
+
+
+def test_route_risk_api():
+    db.init_db()
+    s = client.get("/api/risk/summary").json()
+    assert sum(s["by_level"].values()) == s["segments"] == len(SEGMENTS)
+    cmp = client.get("/api/risk/compare").json()
+    assert len(cmp) == 5 and cmp == sorted(cmp, key=lambda r: (r["closed"], r["max_score"]))
+    seg = client.get("/api/risk/segment/rudraprayag_guptkashi").json()
+    assert seg["ends"][0]["name"] == "Rudraprayag" and "kedarnath" in seg["trips"]
+    assert client.get("/api/risk/segment/nowhere").status_code == 404
+    plan = client.get("/api/risk/plan/kedarnath?start=guptkashi&depart=2026-05-20T06:00&vehicle=bus").json()
+    assert plan["legs"][0]["from"] == "Guptkashi" and plan["legs"][-1]["to"] == "Kedarnath"
+    assert client.get("/api/risk/plan/kedarnath?start=badrinath").status_code == 400
+    assert client.get("/api/risk/plan/kedarnath?vehicle=plane").status_code == 422
+    assert client.get("/api/risk/plan/kedarnath?depart=tomorrow").status_code == 422
+    near = client.get("/api/risk/nearby?lat=30.66&lon=79.03").json()
+    assert near["node"]["name"] == "Gaurikund" and near["segments"]
+    assert isinstance(client.get("/api/risk/advisories").json(), list)
+
+
 # ---------- health ----------
 def test_health_red_flag_blocks_trek():
     assert assess(45, [], ["chest_pain"], "high", "kedarnath")["category"] == "Do not trek now"
@@ -120,6 +168,18 @@ def test_langchain_guardrail_rejects_invented_number(monkeypatch):
     monkeypatch.setattr(llm, "_chain_for", lambda _cfg: RunnableLambda(lambda _in: "The trek is 22 km [1]."))
     llm.reset_cache()
     assert llm.generate("How long is the trek?", ["The trek from Gaurikund is 16 km."]) is None
+
+
+def test_langchain_answers_in_selected_language(monkeypatch):
+    from langchain_core.runnables import RunnableLambda
+
+    seen = {}
+    cfg = {"provider": "openrouter", "base_url": "https://openrouter.ai/api/v1", "model": "test/model"}
+    monkeypatch.setattr(llm, "provider_config", lambda: cfg)
+    monkeypatch.setattr(llm, "_chain_for", lambda _cfg: RunnableLambda(lambda inp: seen.update(inp) or "ट्रेक 16 किमी है [1]।"))
+    llm.reset_cache()
+    assert llm.generate("How long is the trek?", ["ट्रेक 16 किमी है।"], "hi") == "ट्रेक 16 किमी है [1]।"
+    assert seen["language"].startswith("Hindi")   # English question, Hindi chosen -> Hindi answer
 
 
 def test_ai_status_endpoint_hides_secrets():

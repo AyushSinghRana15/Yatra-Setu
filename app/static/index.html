@@ -13,6 +13,10 @@
   <link rel="manifest" href="/static/manifest.json">
 </head>
 <body class="site">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4.5M8.5 21.5h7"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.9A8 8 0 1 1 20.5 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></symbol>
+</svg>
 
 <!-- ================= NAVBAR ================= -->
 <header class="nav" id="nav">
@@ -34,7 +38,7 @@
     <select id="lang" class="lang" aria-label="Answer language" title="Answer & voice language">
       <option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option>
     </select>
-    <button class="icon-btn mic" id="nav-mic" title="Voice command" aria-label="Start voice command">🎙️</button>
+    <button class="icon-btn mic" id="nav-mic" title="Voice command" aria-label="Start voice command"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
     <a class="sos-pill" href="#alerts" data-sos title="Emergency SOS">SOS</a>
     <a class="officials only-desktop" href="/admin">Officials →</a>
     <button class="icon-btn burger" id="burger" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
@@ -54,7 +58,7 @@
           Every answer comes from official content and live data.</p>
         <form class="hero-ask reveal" id="hero-ask">
           <input id="hero-q" placeholder="Try: “Is the road to Kedarnath open?”" aria-label="Ask YatraSetu">
-          <button type="button" class="icon-btn mic" id="hero-mic" title="Ask by voice" aria-label="Ask by voice">🎙️</button>
+          <button type="button" class="icon-btn mic" id="hero-mic" title="Ask by voice" aria-label="Ask by voice"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
           <button class="btn saff" type="submit">Ask →</button>
         </form>
         <div class="hero-chips reveal" id="hero-chips"></div>
@@ -152,7 +156,7 @@
         <div class="chat" id="chat" aria-live="polite"></div>
         <div class="quick" id="quick"></div>
         <form class="chatbar" id="chatbar">
-          <button type="button" class="icon-btn mic big" id="chat-mic" title="Speak your question" aria-label="Speak your question">🎙️</button>
+          <button type="button" class="icon-btn mic big" id="chat-mic" title="Speak your question" aria-label="Speak your question"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
           <input id="q" autocomplete="off" placeholder="Ask in English or हिन्दी, e.g. Is Kedarnath crowded this week?  (press / to focus)">
           <button class="btn" id="send" type="submit">Send ➤</button>
         </form>
@@ -219,17 +223,53 @@
       <p>Each segment is scored from IMD alerts, forecast rain, official road status and terrain.</p></div>
   </div>
   <div class="wrap lift">
-    <div class="grid g2">
+    <div class="card risk-kpis">
+      <div class="kpi-row" id="rk-kpis"><div class="skeleton line"></div></div>
+      <div class="kpi-foot"><span class="muted" id="rk-updated"></span>
+        <button class="btn ghost sm" id="rk-refresh" type="button">↻ Refresh</button></div>
+    </div>
+
+    <div class="grid g2 route-grid">
       <div class="card">
         <h2>Route network</h2>
         <div class="map-wrap"><svg id="map" style="width:100%;height:auto"></svg></div>
-        <p class="muted">Hover or tap a segment to see why it has that risk level.</p>
+        <p class="muted">Click or tap a segment to see why it has that risk level.</p>
       </div>
-      <div class="card">
-        <h2>Check my route</h2>
-        <label for="r-shrine">Destination</label><select id="r-shrine"></select>
-        <div style="margin-top:10px"><button class="btn" id="r-go">Check route</button></div>
+      <div class="card" id="seg-card">
+        <h2>Segment details</h2>
+        <div id="seg-detail" class="seg-empty">
+          <div class="seg-empty-ic">🗺️</div>
+          <p>Select a segment on the map, or use <b>📍 Near me</b> to check the risk where you are.</p>
+          <button class="btn ghost" id="rk-near" type="button">📍 Near me</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g2 route-grid">
+      <div class="card" id="planner">
+        <h2>Plan my trip</h2>
+        <div class="row">
+          <div><label for="r-shrine">Destination</label><select id="r-shrine"></select></div>
+          <div><label for="r-start">Starting from</label><select id="r-start"></select></div>
+        </div>
+        <div class="row">
+          <div><label for="r-depart">Departure</label><input type="datetime-local" id="r-depart"></div>
+          <div><label for="r-vehicle">Vehicle</label><select id="r-vehicle">
+            <option value="car">Car / taxi</option><option value="bus">Bus / tempo traveller</option><option value="two_wheeler">Two-wheeler</option></select></div>
+          <div style="flex:0"><button class="btn" id="r-go" type="button">Plan trip</button></div>
+        </div>
         <div id="r-out"></div>
+      </div>
+      <div class="side-stack">
+        <div class="card">
+          <h2>Live alerts</h2>
+          <div id="rk-feed" class="feed"><div class="skeleton line"></div></div>
+        </div>
+        <div class="card">
+          <h2>Compare shrine routes</h2>
+          <p class="muted">Safest route first. Each block is one segment, coloured by its risk.</p>
+          <div id="rk-compare" class="compare"><div class="skeleton line"></div></div>
+        </div>
       </div>
     </div>
   </div>
@@ -507,8 +547,8 @@
 
 <!-- floating action buttons -->
 <div class="fab-group">
-  <button class="fab mic" id="fab-mic" title="Voice command" aria-label="Voice command">🎙️</button>
-  <a class="fab" href="#assistant" id="fab-chat" title="Ask YatraSetu" aria-label="Ask YatraSetu">💬</a>
+  <button class="fab mic" id="fab-mic" title="Voice command" aria-label="Voice command"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
+  <a class="fab" href="#assistant" id="fab-chat" title="Ask YatraSetu" aria-label="Ask YatraSetu"><svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg></a>
 </div>
 
 <!-- voice overlay -->
@@ -525,6 +565,7 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="/static/charts.js"></script>
+<script src="/static/i18n.js"></script>
 <script src="/static/app.js"></script>
 <script src="/static/voice.js"></script>
 </body>

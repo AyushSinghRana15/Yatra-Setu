@@ -25,9 +25,10 @@ from . import config
 SYSTEM_PROMPT = (
     "You are YatraSetu, a safety assistant for pilgrims in Uttarakhand. Answer ONLY from the numbered "
     "passages provided. If the passages do not contain the answer, reply exactly: NOT_FOUND. "
-    "Never give medical diagnoses. Keep answers under 90 words, in the same language as the question, "
-    "and end with the passage numbers you used in square brackets, e.g. [1]."
+    "Never give medical diagnoses. Keep answers under 90 words, written in {language} even when the question "
+    "or the passages are in another language, and end with the passage numbers you used in square brackets, e.g. [1]."
 )
+LANGUAGE_NAMES = {"en": "English", "hi": "Hindi (Devanagari script)"}
 HUMAN_TEMPLATE = "Passages:\n{context}\n\nQuestion: {question}"
 
 # Small in-process cache: repeated demo questions do not spend tokens.
@@ -153,8 +154,8 @@ def _chain_for(cfg: dict):
 
 
 # ---------- public API used by the assistant ----------
-def generate(question: str, passages: list[str]):
-    """Return a grounded generated answer, or None to fall back to extractive mode."""
+def generate(question: str, passages: list[str], language: str | None = None):
+    """Return a grounded generated answer in ``language`` (en/hi), or None to fall back to extractive mode."""
     global _LAST_ERROR
     if not passages:
         return None
@@ -162,7 +163,8 @@ def generate(question: str, passages: list[str]):
     if not cfg:
         return None
 
-    cache_key = (question.strip().lower(), tuple(passages))
+    lang_name = LANGUAGE_NAMES.get(language or "", "the same language as the question")
+    cache_key = (question.strip().lower(), tuple(passages), lang_name)
     if cache_key in _CACHE:
         _CACHE.move_to_end(cache_key)
         return _CACHE[cache_key]
@@ -172,6 +174,7 @@ def generate(question: str, passages: list[str]):
         answer = chain.invoke({
             "context": build_context(passages),
             "question": redact(question),
+            "language": lang_name,
         }).strip()
     except Exception as exc:                      # network, auth, quota, model errors -> degrade
         _LAST_ERROR = f"{type(exc).__name__}: {exc}"[:240]
