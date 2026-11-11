@@ -14,11 +14,6 @@
 </p>
 
 <p align="center">
-  <b>Minor Project · B.Tech CSE (AI/ML) ·</b><br>
-  Ayush Singh
-</p>
-
-<p align="center">
   <a href="#quick-start">Quick start</a> ·
   <a href="#website">Website</a> ·
   <a href="#voice">Voice</a> ·
