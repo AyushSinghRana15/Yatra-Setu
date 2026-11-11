@@ -20,6 +20,7 @@
       .star { animation: tw 3s ease-in-out infinite; }
       .s2 { animation-delay: -1s; } .s3 { animation-delay: -2s; }
       .chip text { font: 600 15px system-ui, -apple-system, "Segoe UI", sans-serif; fill: #fff; }
+      .chip .ic { fill: none; stroke: #ffe2a8; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
       .chip small, .chip .sub { font: 400 12px system-ui, -apple-system, "Segoe UI", sans-serif; fill: rgba(255,255,255,.8); }
       @keyframes f { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
       @keyframes g { 0%, 100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.08); opacity: 1; } }
@@ -65,15 +66,18 @@
 
   <!-- floating chips -->
   <g transform="translate(66 252)"><g class="chip float1">
-    <rect width="196" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
-    <text x="16" y="29">🗣️  Voice · हिन्दी / English</text>
+    <rect width="236" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
+    <g class="ic" transform="translate(16 14)"><rect x="6" y="1" width="6" height="10" rx="3"/><path d="M3 8a6 6 0 0 0 12 0M9 14v3M6 17h6"/></g>
+    <text x="42" y="29">Voice · हिन्दी / English</text>
   </g></g>
-  <g transform="translate(276 252)"><g class="chip float2">
-    <rect width="196" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
-    <text x="16" y="29">📈  7-day crowd forecast</text>
+  <g transform="translate(316 252)"><g class="chip float2">
+    <rect width="220" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
+    <g class="ic" transform="translate(16 14)"><path d="M1 15l5-5 4 3 7-8M12 5h5v5"/></g>
+    <text x="42" y="29">7-day crowd forecast</text>
   </g></g>
-  <g transform="translate(486 252)"><g class="chip float3">
-    <rect width="156" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
-    <text x="16" y="29">🛣️  Live route risk</text>
+  <g transform="translate(550 252)"><g class="chip float3">
+    <rect width="176" height="46" rx="14" fill="#ffffff" fill-opacity=".14" stroke="#ffffff" stroke-opacity=".3"/>
+    <g class="ic" transform="translate(16 14)"><path d="M6 1L2 17M12 1l4 16M9 2v2M9 8v2M9 14v2"/></g>
+    <text x="42" y="29">Live route risk</text>
   </g></g>
 </svg>
