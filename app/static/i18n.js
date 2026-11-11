@@ -106,7 +106,6 @@
       "आपातकाल 112 · एम्बुलेंस 108 · साइबर धोखाधड़ी 1930। इस साइट को होम स्क्रीन पर जोड़ें, यह कार्ड बिना नेटवर्क के भी उपलब्ध रहेगा।",
     // about
     "Home / About": "होम / परिचय", "About YatraSetu AI": "यात्रासेतु AI का परिचय",
-    "A minor project (B.Tech CSE, AI/ML).": " का माइनर प्रोजेक्ट (B.Tech CSE, AI/ML)।",
     "Setu": "सेतु", "means bridge: it connects pilgrims with verified safety information in their own language.":
       "का अर्थ है पुल: यह श्रद्धालुओं को उनकी अपनी भाषा में प्रमाणित सुरक्षा जानकारी से जोड़ता है।",
     "System architecture": "सिस्टम आर्किटेक्चर", "How the pieces fit together": "सभी हिस्से कैसे जुड़ते हैं",
@@ -134,14 +133,14 @@
     "📷 Image credits": "📷 चित्र आभार",
     "Backgrounds are openly licensed photographs from Wikimedia Commons, used under their licences:":
       "पृष्ठभूमि के चित्र विकिमीडिया कॉमन्स के खुले लाइसेंस वाले फ़ोटो हैं, जो उनके लाइसेंस के अनुसार उपयोग किए गए हैं:",
-    "Project: Ayush Singh, Department of CSE. Prototype with demo data; verify with official sources.":
-      "प्रोजेक्ट: आयुष सिंह, CSE विभाग। डेमो डेटा वाला प्रोटोटाइप; आधिकारिक स्रोतों से पुष्टि करें।",
+    "Prototype with demo data; verify with official sources.":
+      "डेमो डेटा वाला प्रोटोटाइप; आधिकारिक स्रोतों से पुष्टि करें।",
     // footer, overlay
     "Multilingual, voice-enabled safe-travel and crowd advisory assistant for Uttarakhand.": "उत्तराखंड के लिए बहुभाषी, आवाज़ से चलने वाला सुरक्षित यात्रा और भीड़ सलाह सहायक।",
     "Explore": "देखें", "Assistant": "सहायक", "Route risk": "मार्ग जोखिम", "About": "परिचय",
     "112 Emergency": "112 आपातकाल", "108 Ambulance": "108 एम्बुलेंस", "1930 Cyber fraud": "1930 साइबर धोखाधड़ी",
-    "Prototype · Minor Project, Department of CSE · Demo data, verify with official sources · Photos: Wikimedia Commons (see About)":
-      "प्रोटोटाइप · माइनर प्रोजेक्ट, CSE विभाग · डेमो डेटा, आधिकारिक स्रोतों से पुष्टि करें · फ़ोटो: विकिमीडिया कॉमन्स (परिचय देखें)",
+    "Prototype · Demo data, verify with official sources · Photos: Wikimedia Commons (see About)":
+      "प्रोटोटाइप · डेमो डेटा, आधिकारिक स्रोतों से पुष्टि करें · फ़ोटो: विकिमीडिया कॉमन्स (परिचय देखें)",
     "Cancel": "रद्द करें",
     // placeholders and tooltips
     "Answer & voice language": "उत्तर और आवाज़ की भाषा", "Voice command": "आवाज़ कमांड", "Emergency SOS": "आपातकालीन SOS",

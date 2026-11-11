@@ -249,7 +249,7 @@ pic = s.shapes.add_picture(str(SHOTS / "07_mobile_view.png"), Inches(10.17), Inc
 pic.line.color.rgb = TEAL_2
 pic.line.width = Pt(0.75)
 
-text(s, 0.85, 0.82, 8.4, 0.3, "LIVE DEMO  ·  MINOR PROJECT 2026", size=11, color=SAFF, bold=True, letter_spacing=2.0)
+text(s, 0.85, 0.82, 8.4, 0.3, "LIVE DEMO", size=11, color=SAFF, bold=True, letter_spacing=2.0)
 text(s, 0.8, 1.18, 9.0, 1.0, "YatraSetu AI", size=58, color=WHITE, bold=True, font=HEAD)
 text(s, 0.85, 2.42, 8.4, 0.95, "A safe-travel bridge for every pilgrim in Uttarakhand.",
      size=23, color=PALE_BLUE, font=HEAD)
@@ -258,8 +258,6 @@ text(s, 0.85, 3.82, 8.3, 1.15,
      "One multilingual assistant. Five safety services. Grounded in official data — from a 7-day crowd "
      "forecast to a WhatsApp alert on the road that is actually closed.",
      size=14.5, color=PALE_BLUE, line_spacing=1.15)
-text(s, 0.85, 5.45, 8.7, 0.32, "Ayush Singh  ·  B.Tech CSE (AI/ML)  ·",
-     size=12.5, color=WHITE, bold=True)
 text(s, 0.85, 5.86, 8.7, 0.3, "github.com/AyushSinghRana15/Yatra-Setu", size=11, color=PALE_BLUE)
 chip(s, 0.85, 6.45, 3.25, 0.34, "OPENROUTER  ·  LANGCHAIN  ·  FASTAPI", fill=TEAL_2, color=WHITE, size=8.8)
 notes(s, """
@@ -821,7 +819,7 @@ for i, (t, d) in enumerate([("PILOT DISTRICTS", "Rudraprayag + Chamoli"), ("TIME
     text(s, x + 0.18, 5.1, 2.6, 0.4, d, size=13, color=WHITE, bold=True, font=HEAD)
 text(s, 0.85, 6.15, 9.0, 0.35, "Thank you — questions?", size=20, color=WHITE, bold=True, font=HEAD)
 text(s, 0.85, 6.62, 10.0, 0.3,
-     "Ayush Singh  ·  ayush@example.com  ·  github.com/AyushSinghRana15/Yatra-Setu",
+     "github.com/AyushSinghRana15/Yatra-Setu",
      size=10.5, color=PALE_BLUE)
 notes(s, """
 Close on the ask, not on the tech: one district, one data MoU, one season. Rudraprayag and Chamoli cover
