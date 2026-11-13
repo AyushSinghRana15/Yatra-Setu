@@ -3,7 +3,9 @@ const $ = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const api = async (url, body, method) => {
   const r = await fetch(url, body ? { method: method || "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) } : {});
-  const j = await r.json(); if (!r.ok) throw new Error(j.detail ? JSON.stringify(j.detail) : r.statusText); return j;
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(Array.isArray(j.detail) ? j.detail.map(d => d.msg).join("; ") : j.detail || r.statusText);
+  return j;
 };
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const tr = s => I18N.tr(s);                       // UI text in the chosen language (i18n.js)
@@ -14,6 +16,15 @@ const store = {  // per-browser conveniences only; the app works without storage
   get(k, d) { try { const v = localStorage.getItem("ys_" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
   set(k, v) { try { localStorage.setItem("ys_" + k, JSON.stringify(v)); } catch { /* private mode */ } },
 };
+// Run an async action from a button: show it as busy, block double clicks, and never fail silently.
+async function withBusy(btn, fn) {
+  if (btn.disabled) return;
+  btn.disabled = true; btn.classList.add("busy");
+  try { await fn(); }
+  catch (e) { toast(navigator.onLine === false ? "You are offline. Check your connection and try again." : "Something went wrong. Please try again.", 4500); console.error(e); }
+  finally { btn.disabled = false; btn.classList.remove("busy"); }
+}
+const fieldError = (el, bad) => { el.classList.toggle("invalid", !!bad); el.setAttribute("aria-invalid", bad ? "true" : "false"); if (bad) el.focus(); return !!bad; };
 function toast(msg, ms = 3200) {
   const t = $("#toast"); t.textContent = tr(msg); t.classList.add("show");
   clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove("show"), ms);
@@ -67,7 +78,8 @@ function show(page, params = new URLSearchParams()) {
   if (changed) {
     $$(".page").forEach(p => p.classList.remove("active"));
     $("#page-" + page).classList.add("active");
-    $$(".nav-links a[data-page]").forEach(a => a.classList.toggle("active", a.dataset.page === page));
+    $$(".nav-links a[data-page]").forEach(a => { const on = a.dataset.page === page; a.classList.toggle("active", on);
+      on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
     document.body.dataset.page = page;
     document.title = `${$("#page-" + page).dataset.title} · YatraSetu AI`;
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -78,6 +90,7 @@ function show(page, params = new URLSearchParams()) {
   if (onEnter[page]) onEnter[page](params, changed);
 }
 window.addEventListener("hashchange", route);
+document.addEventListener("input", e => { if (e.target.classList?.contains("invalid")) { e.target.classList.remove("invalid"); e.target.removeAttribute("aria-invalid"); } });
 
 // mobile menu + navbar shadow
 const burger = $("#burger");
@@ -128,7 +141,7 @@ function renderShrineOptions() {
     if (keep) $(sel).value = keep;
   });
   const on = $("#c-shrine").value;
-  $("#c-pills").innerHTML = SHRINES.map(s => `<button data-id="${s.id}" role="tab" class="${s.id === on ? "on" : ""}">${esc(shrineName(s.id))}</button>`).join("");
+  $("#c-pills").innerHTML = SHRINES.map(s => `<button data-id="${s.id}" role="tab" aria-selected="${s.id === on}" class="${s.id === on ? "on" : ""}">${esc(shrineName(s.id))}</button>`).join("");
   $$("#c-pills button").forEach(b => b.onclick = () => { $("#c-shrine").value = b.dataset.id; loadForecast(); });
 }
 
@@ -314,7 +327,7 @@ let busy = false;
 async function ask(text, opts = {}) {
   text = (text || "").trim();
   if (!text || busy) return;
-  busy = true;
+  busy = true; $("#send").disabled = true;
   addMsg((opts.voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : "") + esc(text), "user"); $("#q").value = "";
   HISTORY.push({ role: "user", text, voice: !!opts.voice });
   const wait = addMsg(`<span class="typing"><i></i><i></i><i></i></span>`, "bot");
@@ -331,8 +344,13 @@ async function ask(text, opts = {}) {
       <tr><td>Grounded</td><td>${r.grounded ? "✅ yes" : "⚠️ no (fallback)"}</td></tr>
       <tr><td>Sources (similarity)</td><td>${r.sources.map(s => esc(s.title) + (s.score != null ? ` (${s.score})` : "")).join("<br>") || "–"}</td></tr></table>`;
     if (window.YSVoice && (AUTO.checked || (opts.voice && YSVoice.replyToVoice))) YSVoice.speak(r.answer, r.language);
-  } catch (e) { wait.innerHTML = "Sorry, something went wrong: " + esc(e.message); }
-  finally { busy = false; }
+  } catch (e) {
+    HISTORY.pop();   // the question was not answered, so do not keep it in the saved conversation
+    wait.innerHTML = `${esc(tr(navigator.onLine === false ? "You are offline. Check your connection and try again." : "Sorry, I could not get an answer."))}
+      <div class="msg-tools"><button class="act" type="button">↻ ${esc(tr("Try again"))}</button></div>`;
+    wait.querySelector("button").onclick = () => { wait.previousElementSibling?.remove(); wait.remove(); ask(text, opts); };
+  }
+  finally { busy = false; $("#send").disabled = false; }
 }
 function askFromAnywhere(text, opts) { goto("assistant"); setTimeout(() => ask(text, opts), 60); }
 $("#chatbar").onsubmit = e => { e.preventDefault(); ask($("#q").value); };
@@ -346,10 +364,11 @@ onEnter.assistant = (_, changed) => { if (changed) setTimeout(() => { $("#chat")
 async function loadForecast() {
   await ready;
   const sid = $("#c-shrine").value || "kedarnath";
-  $$("#c-pills button").forEach(b => b.classList.toggle("on", b.dataset.id === sid));
+  $$("#c-pills button").forEach(b => { const on = b.dataset.id === sid; b.classList.toggle("on", on); b.setAttribute("aria-selected", on); });
   const f = await api(`/api/forecast/${sid}?start=${$("#c-date").value}&days=7`);
   $("#c-days").innerHTML = f.days.map((d, k) => `<div class="day" style="animation-delay:${k * 50}ms">${new Date(d.date).toLocaleDateString(isHi() ? "hi-IN" : "en-IN", { weekday: "short", day: "numeric", month: "short" })}
      <b>${d.open ? d.visitors.toLocaleString("en-IN") : "–"}</b>${badge(d.band)}</div>`).join("");
+  $("#c-chart").hidden = !f.days.some(d => d.open);   // nothing to plot when the shrine is closed all week
   const colors = f.days.map(d => d.ratio > 1 ? "#c0392b" : d.ratio > 0.85 ? "#e07a1f" : d.ratio > 0.6 ? "#d4a017" : "#2e8b57");
   barChart($("#c-chart"), f.days.map(d => d.date.slice(5)), f.days.map(d => d.visitors),
     { colors, line: f.capacity, lineLabel: isHi() ? `धारण क्षमता ${f.capacity.toLocaleString("en-IN")}/दिन` : `Carrying capacity ${f.capacity.toLocaleString("en-IN")}/day` });
@@ -365,12 +384,16 @@ async function loadForecast() {
       : `<div class="notice"><b>${peak.date}</b> is forecast as <b>${peak.band}</b>. Lighter dates nearby: ${dates}.
          ${alt ? `Alternative: <b>${esc(alt.shrine)}</b> (${esc(alt.band)}).` : ""}</div>`;
   } else {
-    $("#c-suggest").innerHTML = `<div class="notice">${isHi() ? `इन तिथियों में ${esc(shrineName(sid))} के कपाट बंद हैं। मई–नवंबर के यात्रा सीज़न की कोई तारीख चुनें।`
-      : `${esc(shrineName(sid))} is closed for the season on these dates. Try a date in the May–November yatra season.`}</div>`;
+    const open = new Date(f.next_open).toLocaleDateString(isHi() ? "hi-IN" : "en-IN", { day: "numeric", month: "long", year: "numeric" });
+    $("#c-suggest").innerHTML = `<div class="closed-state"><div class="cs-ic">🏔️</div>
+      <b>${isHi() ? `${esc(shrineName(sid))} के कपाट इन तिथियों में बंद हैं` : `${esc(shrineName(sid))} is closed on these dates`}</b>
+      <p>${isHi() ? `शीतकाल में धाम बंद रहता है। कपाट लगभग <b>${open}</b> को खुलेंगे।` : `The shrine shuts for winter. It is expected to reopen around <b>${open}</b>.`}</p>
+      <button class="btn saff" type="button" id="c-jump">${isHi() ? "खुलने वाले सप्ताह का अनुमान देखें" : "See the forecast for opening week"} →</button></div>`;
+    $("#c-jump").onclick = () => { $("#c-date").value = f.next_open; loadForecast(); };
   }
 }
-$("#c-go").onclick = loadForecast;
-$("#c-shrine").onchange = loadForecast;
+$("#c-go").onclick = () => withBusy($("#c-go"), loadForecast);
+$("#c-shrine").onchange = $("#c-date").onchange = () => withBusy($("#c-go"), loadForecast);
 onEnter.crowd = async params => { await ready; if (params.get("shrine")) $("#c-shrine").value = params.get("shrine"); loadForecast(); };
 window.addEventListener("resize", () => { if (current === "crowd" && $("#c-days").children.length) loadForecast(); });
 
@@ -513,16 +536,16 @@ async function planTrip(scroll) {
   $$("#r-out [data-seg]").forEach(li => li.onclick = () => showSegment(li.dataset.seg, true));
   if (scroll) $("#planner").scrollIntoView({ behavior: "smooth", block: "start" });
 }
-$("#r-go").onclick = () => planTrip();
+$("#r-go").onclick = () => withBusy($("#r-go"), () => planTrip());
 $("#r-shrine").onchange = () => { $("#r-start").innerHTML = ""; planTrip(); };
 $("#r-start").onchange = $("#r-vehicle").onchange = $("#r-depart").onchange = () => planTrip();
 $("#rk-near").onclick = nearMe;
-$("#rk-refresh").onclick = async () => {
+$("#rk-refresh").onclick = () => withBusy($("#rk-refresh"), async () => {
   await drawMap(); await loadRiskOverview();
   if (RK.selected) showSegment(RK.selected);
   if (RK.plan) planTrip();
   toast(isHi() ? "मार्ग डेटा अपडेट हुआ" : "Route data refreshed");
-};
+});
 function refreshRouteText() {  // re-render generated route text after a language change
   if (!RK.net) return;
   loadRiskOverview(); if (RK.plan) planTrip(); if (RK.selected) showSegment(RK.selected);
@@ -538,27 +561,37 @@ onEnter.route = async params => {
 };
 
 // ================= HEALTH =================
-$("#h-go").onclick = async () => {
+$("#h-go").onclick = () => withBusy($("#h-go"), async () => {
+  const age = +$("#h-age").value;
+  if (fieldError($("#h-age"), !(age >= 1 && age <= 110))) return toast("Enter an age between 1 and 110.");
   const conds = $$("#health-form .check input:not(.rf)").filter(c => c.checked).map(c => c.value);
   const rfs = $$("#health-form .rf").filter(c => c.checked).map(c => c.value);
-  const r = await api("/api/health/check", { age: +$("#h-age").value, conditions: conds, red_flags: rfs, fitness: $("#h-fit").value, shrine: $("#h-shrine").value });
+  const r = await api("/api/health/check", { age, conditions: conds, red_flags: rfs, fitness: $("#h-fit").value, shrine: $("#h-shrine").value });
   $("#h-out").innerHTML = `<div class="result" style="margin-top:0"><div style="font-size:18px;margin-bottom:8px">${badge(r.category)}</div>
     ${r.reasons.length ? `<h3>${tr("Why")}</h3><ul>${r.reasons.map(x => `<li>${esc(x)}</li>`).join("")}</ul>` : ""}
     <h3>${tr("What to do")}</h3><ul>${r.actions.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
     <h3>${tr("On your route")}</h3><p>🩺 ${tr("Screening")}: ${r.screening_points.join(", ") || "–"}<br>🏥 ${tr("Medical posts")}: ${r.medical_posts.join(", ")}</p>
     <p class="muted"><i>${esc(r.disclaimer)}</i></p></div>`;
-};
+  if (matchMedia("(max-width: 860px)").matches) $("#h-out").scrollIntoView({ behavior: "smooth", block: "nearest" });   // the result is below the form on phones
+});
 onEnter.health = async params => { await ready; if (params.get("shrine")) $("#h-shrine").value = params.get("shrine"); };
 
 // ================= ALERTS & SOS =================
-$("#s-go").onclick = async () => {
+$("#s-go").onclick = () => withBusy($("#s-go"), async () => {
+  const warn = msg => { $("#s-out").innerHTML = `<div class="notice" role="alert">${esc(tr(msg))}</div>`; };
+  $("#s-phone").value = $("#s-phone").value.replace(/[\s-]/g, "");
+  if (fieldError($("#s-phone"), !/^\+?\d{10,13}$/.test($("#s-phone").value))) return warn("Enter a valid mobile number, 10 digits or with country code.");
+  const g = +$("#s-group").value;
+  if (fieldError($("#s-group"), !(g >= 1 && g <= 60))) return warn("Group size must be between 1 and 60.");
+  if (fieldError($("#s-to"), !$("#s-from").value || !$("#s-to").value || $("#s-to").value < $("#s-from").value)) return warn("The end date must be on or after the start date.");
+  if (!$("#s-consent").checked) { $("#s-consent").focus(); return warn("Please tick the consent box so we can store your trip for alerts."); }
   try {
     const r = await api("/api/subscribe", { phone: $("#s-phone").value, language: $("#s-lang").value, shrine: $("#s-shrine").value,
       start_date: $("#s-from").value, end_date: $("#s-to").value, group_size: +$("#s-group").value, consent: $("#s-consent").checked });
     $("#s-out").innerHTML = `<div class="result">✅ ${isHi() ? `सदस्यता हो गई (ID ${r.id})। आपको मार्ग के ${r.segments.length} हिस्सों के लिए WhatsApp अलर्ट (SMS विकल्प) मिलेंगे।`
       : `Subscribed (ID ${r.id}). You will get WhatsApp alerts (SMS fallback) for ${r.segments.length} route segments.`}</div>`;
-  } catch (e) { $("#s-out").innerHTML = `<div class="notice">${esc(e.message)}</div>`; }
-};
+  } catch (e) { $("#s-out").innerHTML = `<div class="notice" role="alert">${esc(e.message)}</div>`; }
+});
 $("#sos-locate").onclick = () => {
   if (!navigator.geolocation) return toast("Location is not available in this browser");
   toast("Finding your location…");
@@ -566,13 +599,17 @@ $("#sos-locate").onclick = () => {
     $("#sos-lat").value = p.coords.latitude.toFixed(4); $("#sos-lon").value = p.coords.longitude.toFixed(4); toast("Location filled in");
   }, () => toast("Could not get your location. Enter it by hand."), { enableHighAccuracy: true, timeout: 10000 });
 };
-$("#sos-go").onclick = async () => {
-  const r = await api("/api/sos", { lat: +$("#sos-lat").value, lon: +$("#sos-lon").value, contacts: [$("#sos-contact").value] });
+$("#sos-go").onclick = () => withBusy($("#sos-go"), async () => {
+  const lat = parseFloat($("#sos-lat").value), lon = parseFloat($("#sos-lon").value);
+  if (fieldError($("#sos-lat"), !(Math.abs(lat) <= 90)) || fieldError($("#sos-lon"), !(Math.abs(lon) <= 180))) {
+    $("#sos-out").innerHTML = `<div class="notice" role="alert">${esc(tr("Enter your location or tap Locate me. You can still call 112 now."))}
+      <br><a class="btn red sm" style="margin-top:8px" href="tel:112">${tr("📞 Call 112")}</a></div>`; return; }
+  const r = await api("/api/sos", { lat, lon, contacts: [$("#sos-contact").value] });
   $("#sos-out").innerHTML = `<div class="result"><b>${tr("Nearest help:")}</b> ${esc(r.nearest_help)} (~${r.nearest_km} ${isHi() ? "किमी" : "km"}; ${r.nearest_facilities.join(", ")})<br>
     <a class="btn red" style="margin-top:8px" href="${r.dial}">${tr("📞 Call 112")}</a>
     <a class="btn" style="margin-top:8px" href="${r.whatsapp_share}" target="_blank" rel="noopener">${tr("Share on WhatsApp")}</a>
     <p class="muted">${esc(r.message)}</p></div>`;
-};
+});
 
 // ================= ABOUT =================
 const NODE_INFO = {

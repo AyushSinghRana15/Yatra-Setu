@@ -45,10 +45,14 @@ button.btn:active { transform: translateY(0); }
 .btn.saff { background: var(--saff) !important; } .btn.red { background: var(--red) !important; }
 .btn.ghost { background: var(--teal-l) !important; color: var(--teal) !important; }
 .btn.sm { padding: 6px 10px; font-size: 12.5px; }
-button.btn:disabled { opacity: .5; }
+button.btn:disabled { opacity: .6; cursor: default; transform: none; box-shadow: none; }
+button.btn.busy::after { content: ""; display: inline-block; width: 12px; height: 12px; margin-left: 8px; vertical-align: -1px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+input.invalid, select.invalid { border-color: var(--red); box-shadow: 0 0 0 3px rgba(192, 57, 43, .14); }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 .row { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; } .row > * { flex: 1; min-width: 140px; }
 /* chat */
-.chat { height: 470px; overflow-y: auto; padding: 10px; background: #fafbfc; border: 1px solid var(--rule); border-radius: 12px; scroll-behavior: smooth; }
+.chat { height: min(470px, 58vh); min-height: 260px; overflow-y: auto; padding: 10px; background: #fafbfc; border: 1px solid var(--rule); border-radius: 12px; scroll-behavior: smooth; }
 .msg { max-width: 86%; margin: 10px 0; padding: 11px 14px; border-radius: 14px; line-height: 1.5; font-size: 14.5px; animation: pop .35s var(--ease) both; }
 .msg.user { margin-left: auto; background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; border-bottom-right-radius: 4px; }
 .msg.bot { background: #fff; border: 1px solid var(--rule); border-bottom-left-radius: 4px; box-shadow: 0 2px 8px rgba(14, 42, 51, .05); }
@@ -142,14 +146,14 @@ body.site { background: var(--snow); }
 .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 .only-mobile, .nav-links a.only-mobile { display: none; }
 /* laptops and tablets: brand + actions on top, the full row of link pills underneath */
-@media (max-width: 1439px) and (min-width: 761px) {
+@media (max-width: 1439px) and (min-width: 1001px) {
   .nav { flex-wrap: wrap; row-gap: 10px; padding-bottom: 12px; }
   .nav-actions { margin-left: auto; }
   .nav-links { order: 3; flex: 0 0 100%; justify-content: center; flex-wrap: wrap; margin: 0; padding-top: 10px;
     border-top: 1px solid rgba(255, 255, 255, .08); }
 }
-/* phones: pills move into the ☰ menu */
-@media (max-width: 760px) {
+/* phones and tablets: pills move into the ☰ menu (below this width they would wrap onto a third row) */
+@media (max-width: 1000px) {
   .nav-links { position: fixed; top: 58px; left: 0; right: 0; flex-direction: column; align-items: stretch; background: rgba(14, 42, 51, .98);
     padding: 14px 16px 20px; gap: 8px; transform: translateY(-12px); opacity: 0; pointer-events: none; transition: transform .3s var(--ease), opacity .25s; margin: 0;
     box-shadow: 0 18px 40px rgba(0, 0, 0, .3); max-height: calc(100vh - 58px); overflow-y: auto; }
@@ -369,6 +373,11 @@ kbd { font-family: inherit; font-size: 12.5px; background: var(--teal-l); color:
   transition: all .2s var(--ease); }
 .shrine-pills button.on { background: var(--teal); color: #fff; border-color: var(--teal); box-shadow: 0 4px 12px rgba(31, 78, 95, .25); }
 @media (max-width: 700px) { .daycards { grid-template-columns: repeat(4, 1fr); } }
+.closed-state { text-align: center; padding: 26px 16px 22px; margin-top: 14px; border-radius: 14px; background: var(--teal-l); animation: rise .4s var(--ease) both; }
+.closed-state .cs-ic { font-size: 40px; line-height: 1; margin-bottom: 8px; }
+.closed-state > b { font-family: var(--display); font-size: 17px; color: var(--night); }
+.closed-state p { margin: 6px 0 14px; color: var(--grey); }
+canvas[hidden] { display: none !important; }
 .map-wrap { overflow-x: auto; }
 .map-wrap svg { min-width: 520px; }
 
@@ -528,6 +537,13 @@ ul.tight { padding-left: 18px; margin: 6px 0; line-height: 1.6; }
 .fab:hover { transform: scale(1.08); }
 .fab.mic { background: linear-gradient(135deg, var(--saff), var(--gold)); }
 body[data-page="assistant"] #fab-chat { opacity: 0; pointer-events: none; transform: scale(.6); }
+/* small screens: smaller buttons, and out of the way while the user is filling in a field */
+@media (max-width: 1000px) {
+  .fab-group { right: 12px; bottom: 12px; gap: 8px; } .fab { width: 46px; height: 46px; } .fab .ic { width: 21px; height: 21px; }
+  body:has(.site-main input:focus, .site-main select:focus, .site-main textarea:focus) .fab-group { opacity: 0; pointer-events: none; }
+  .site-footer { padding-bottom: 76px; }
+}
+.fab-group { transition: opacity .2s; }
 .voice-overlay { position: fixed; inset: 0; z-index: 80; background: rgba(8, 26, 33, .55); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
   display: flex; align-items: flex-end; justify-content: center; animation: fade .25s both; }
 .voice-overlay[hidden] { display: none; }
@@ -555,6 +571,7 @@ body[data-page="assistant"] #fab-chat { opacity: 0; pointer-events: none; transf
 @keyframes barUp { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 @keyframes drip { from { top: -4px; opacity: 0; } 20% { opacity: 1; } 80% { opacity: 1; } to { top: 26px; opacity: 0; } }
 @keyframes wave { 0%, 100% { height: 12px; } 50% { height: 44px; } }
+@keyframes spin { to { transform: rotate(360deg); } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
 @keyframes flash { 0%, 100% { box-shadow: var(--shadow); } 50% { box-shadow: 0 0 0 4px rgba(192, 57, 43, .55), var(--shadow); } }

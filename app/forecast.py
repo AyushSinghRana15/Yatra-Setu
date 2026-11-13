@@ -77,6 +77,13 @@ class CrowdForecaster:
             opening, closing = opening + timedelta(21), date(d.year, 10, 10)
         return opening, closing
 
+    def next_opening(self, sid, d: date) -> date:
+        """First open date on or after d: today in season, else the next opening day."""
+        opening, closing = self._season(sid, d)
+        if d > closing:
+            opening, _ = self._season(sid, date(d.year + 1, 1, 1))
+        return max(d, opening)
+
     def features_for(self, sid, d: date, rain_mm=None, alert_level=0):
         opening, closing = self._season(sid, d)
         summer = date(d.year, 5, 15) <= d <= date(d.year, 6, 30)
@@ -102,7 +109,8 @@ class CrowdForecaster:
             v = float(np.expm1(self.model.predict(pd.DataFrame([feats])[FEATURES])[0]))
             out.append({"date": d.isoformat(), "open": True, "visitors": int(round(v, -1)),
                         "ratio": round(v / cap, 2), "band": band(v / cap), "alert_level": lvl})
-        return {"shrine": sid, "name": self.shrines[sid]["name"], "capacity": cap, "days": out}
+        return {"shrine": sid, "name": self.shrines[sid]["name"], "capacity": cap, "days": out,
+                "next_open": self.next_opening(sid, start).isoformat()}
 
     def suggest(self, sid: str, d: date):
         """FR-11: if the day is High/Over capacity, suggest two lighter dates and an alternative shrine."""

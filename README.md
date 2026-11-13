@@ -49,7 +49,7 @@ and reach the travellers on an affected route.
 ## 🚀 Quick start
 
 ```bash
-cd YatraSetu-AI
+cd Yatra-Setu
 cp .env.example .env          # optional: add OPENROUTER_API_KEY for generative answers
 ./run.sh
 ```
@@ -387,7 +387,7 @@ scripts/             data generation, demo seeding, evaluation, demo-deck build
 tests/               pytest suite and bilingual gold question set
 docs/                banner and graphics, screenshots, diagrams, evaluation results, demo runbook
 presentation/        live-demo deck and project pitch
-report/              project report (DOCX / PDF)
+report/              project report (DOCX)
 ```
 </details>
 

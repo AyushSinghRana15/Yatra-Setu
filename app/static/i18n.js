@@ -158,6 +158,15 @@
     "🎙️ spoken": "🎙️ बोला गया", "Hover or tap to compare →": "तुलना के लिए माउस ले जाएँ या टैप करें →",
     "Why": "क्यों", "What to do": "क्या करें", "On your route": "आपके मार्ग पर", "Screening": "स्क्रीनिंग", "Medical posts": "चिकित्सा केंद्र",
     "Nearest help:": "नज़दीकी मदद:", "Share on WhatsApp": "WhatsApp पर साझा करें", "Tip:": "सुझाव:", "click a block above.": "ऊपर किसी ब्लॉक पर क्लिक करें।",
+    "Something went wrong. Please try again.": "कुछ गड़बड़ हुई। कृपया दोबारा कोशिश करें।",
+    "You are offline. Check your connection and try again.": "आप ऑफ़लाइन हैं। कनेक्शन जाँचकर दोबारा कोशिश करें।",
+    "Sorry, I could not get an answer.": "क्षमा करें, उत्तर नहीं मिल पाया।", "Try again": "दोबारा कोशिश करें",
+    "Enter an age between 1 and 110.": "1 से 110 के बीच आयु लिखें।",
+    "Enter a valid mobile number, 10 digits or with country code.": "सही मोबाइल नंबर लिखें, 10 अंक या देश कोड के साथ।",
+    "Group size must be between 1 and 60.": "समूह का आकार 1 से 60 के बीच होना चाहिए।",
+    "The end date must be on or after the start date.": "समाप्ति तिथि आरंभ तिथि के बाद या उसी दिन होनी चाहिए।",
+    "Please tick the consent box so we can store your trip for alerts.": "कृपया सहमति बॉक्स पर निशान लगाएँ ताकि अलर्ट के लिए आपकी यात्रा सहेजी जा सके।",
+    "Enter your location or tap Locate me. You can still call 112 now.": "अपनी लोकेशन लिखें या 'लोकेट मी' दबाएँ। आप अभी भी 112 पर कॉल कर सकते हैं।",
     "Answer copied": "उत्तर कॉपी हो गया", "Chat cleared": "बातचीत साफ हो गई",
   };
   // Dynamic content that is not a straight lookup.
