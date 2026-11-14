@@ -1,5 +1,8 @@
 // Minimal dependency-free charts (canvas) and the route-risk map (SVG).
-const COLORS = { teal: "#1f4e5f", saff: "#d9731e", grey: "#9db7c0", red: "#c0392b", rule: "#d6dee2", ink: "#1b2a33" };
+// Colours come from the page's CSS variables, so charts follow the theme and light or dark mode.
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COLORS = { get teal() { return cssVar("--teal-2"); }, get accent() { return cssVar("--accent"); }, get grey() { return cssVar("--field"); }, red: "#c0392b",
+  get rule() { return cssVar("--rule"); }, get ink() { return cssVar("--ink"); }, get muted() { return cssVar("--muted"); }, get card() { return cssVar("--card"); }, get tint() { return cssVar("--tint"); } };
 const LEVEL_COLORS = { Green: "#2e8b57", Yellow: "#d4a017", Orange: "#e07a1f", Red: "#c0392b" };
 
 function setupCanvas(canvas) {
@@ -16,7 +19,7 @@ function barChart(canvas, labels, values, opts = {}) {
   const pad = { l: 46, r: 10, t: 14, b: 34 };
   const max = Math.max(...values, opts.line || 0) * 1.15 || 1;
   const bw = (w - pad.l - pad.r) / values.length;
-  ctx.strokeStyle = COLORS.rule; ctx.fillStyle = "#6b7780";
+  ctx.strokeStyle = COLORS.rule; ctx.fillStyle = COLORS.muted;
   for (let i = 0; i <= 4; i++) {
     const y = pad.t + (h - pad.t - pad.b) * i / 4;
     ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
@@ -26,7 +29,7 @@ function barChart(canvas, labels, values, opts = {}) {
     const bh = (h - pad.t - pad.b) * v / max;
     ctx.fillStyle = (opts.colors && opts.colors[i]) || COLORS.teal;
     ctx.fillRect(pad.l + i * bw + bw * 0.18, h - pad.b - bh, bw * 0.64, bh);
-    ctx.fillStyle = "#6b7780"; ctx.textAlign = "center";
+    ctx.fillStyle = COLORS.muted; ctx.textAlign = "center";
     ctx.fillText(labels[i], pad.l + i * bw + bw / 2, h - pad.b + 16);
     ctx.textAlign = "left";
   });
@@ -35,7 +38,7 @@ function barChart(canvas, labels, values, opts = {}) {
     ctx.strokeStyle = COLORS.red; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.6;
     ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke(); ctx.setLineDash([]);
     const lbl = opts.lineLabel || ""; const tw = ctx.measureText(lbl).width;
-    ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.fillRect(pad.l + 4, y - 19, tw + 10, 16);
+    ctx.fillStyle = COLORS.card; ctx.fillRect(pad.l + 4, y - 19, tw + 10, 16);
     ctx.fillStyle = COLORS.red; ctx.fillText(lbl, pad.l + 9, y - 7);
   }
 }
@@ -47,7 +50,7 @@ function lineChart(canvas, labels, series, opts = {}) {
   const max = Math.max(...all) * 1.1 || 1;
   const x = i => pad.l + (w - pad.l - pad.r) * i / (labels.length - 1);
   const y = v => h - pad.b - (h - pad.t - pad.b) * v / max;
-  ctx.strokeStyle = COLORS.rule; ctx.fillStyle = "#6b7780";
+  ctx.strokeStyle = COLORS.rule; ctx.fillStyle = COLORS.muted;
   for (let i = 0; i <= 4; i++) {
     const yy = pad.t + (h - pad.t - pad.b) * i / 4;
     ctx.beginPath(); ctx.moveTo(pad.l, yy); ctx.lineTo(w - pad.r, yy); ctx.stroke();
@@ -76,7 +79,7 @@ function routeMap(svg, data, highlight = [], opts = {}) {
   svg.setAttribute("viewBox", "0 0 900 470");
   const el = (tag, attrs, text) => { const e = document.createElementNS(ns, tag);
     Object.entries(attrs).forEach(([k, v]) => e.setAttribute(k, v)); if (text) e.textContent = text; svg.appendChild(e); return e; };
-  el("rect", { x: 0, y: 0, width: 900, height: 470, fill: "#f3f7f8", rx: 10 });
+  el("rect", { x: 0, y: 0, width: 900, height: 470, fill: COLORS.tint, rx: 10 });
   data.segments.forEach(s => {
     const a = data.nodes[s.from_id], b = data.nodes[s.to_id];
     const hl = highlight.length === 0 || highlight.includes(s.id);
@@ -100,7 +103,7 @@ function routeMap(svg, data, highlight = [], opts = {}) {
     if (s.status !== "Open") el("text", { x: (a.x + b.x) / 2 + 6, y: (a.y + b.y) / 2 - 6, fill: COLORS.red, "font-size": 15, "font-weight": 700 }, s.status.toUpperCase());
   });
   Object.entries(data.nodes).forEach(([id, n]) => {
-    el("circle", { cx: n.x, cy: n.y, r: 6, fill: "#fff", stroke: COLORS.teal, "stroke-width": 2.5 });
+    el("circle", { cx: n.x, cy: n.y, r: 6, fill: COLORS.card, stroke: COLORS.accent, "stroke-width": 2.5 });
     const right = n.x > 760;
     el("text", { x: right ? n.x - 9 : n.x + 9, y: n.y + 4, "font-size": 17, "font-weight": 600, fill: COLORS.ink,
       "text-anchor": right ? "end" : "start" }, n.name);

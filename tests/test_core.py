@@ -242,3 +242,13 @@ def test_romanized_hindi_is_understood():
     assert respond("bheed kitni hai badrinath mein")["intent"] == "crowd"
     assert respond("Is the road to Kedarnath open?")["language"] == "en"       # plain English is left alone
     assert respond("bachao, seene mein dard hai")["intent"] == "emergency"
+
+
+def test_dashboard_logins_are_hashed_and_expire():
+    from app import config, main
+    assert all("password" not in u and isinstance(u["hash"], bytes) for u in config.ADMIN_USERS.values())
+    assert client.post("/api/admin/login", json={"username": "editor", "password": "wrong"}).status_code == 401
+    tok = client.post("/api/admin/login", json={"username": "editor", "password": "editor123"}).json()["token"]
+    assert client.get("/api/admin/advisories", headers={"X-Token": tok}).status_code == 200
+    main.TOKENS[tok]["expires"] = 0                                          # an expired session is rejected
+    assert client.get("/api/admin/advisories", headers={"X-Token": tok}).status_code == 401

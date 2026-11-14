@@ -1,5 +1,7 @@
 """Central configuration. Values can be overridden with environment variables or a .env file."""
+import hashlib
 import os
+import secrets
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -39,11 +41,22 @@ LLM_MODEL = os.getenv("LLM_MODEL", "")
 BHASHINI_API_KEY = os.getenv("BHASHINI_API_KEY", "")
 BHASHINI_USER_ID = os.getenv("BHASHINI_USER_ID", "")
 
-# Demo admin credentials for the officials' dashboard (change in production!)
-ADMIN_USERS = {
-    "editor": {"password": os.getenv("EDITOR_PASSWORD", "editor123"), "role": "editor"},
-    "approver": {"password": os.getenv("APPROVER_PASSWORD", "approver123"), "role": "approver"},
-}
+# Officials' dashboard accounts. The defaults are for the demo only: set EDITOR_PASSWORD and APPROVER_PASSWORD
+# in production. Passwords are never kept in memory as text; only a salted scrypt hash is.
+_DEFAULTS = {"editor": "editor123", "approver": "approver123"}
+_SALT = secrets.token_bytes(16)
+
+
+def hash_password(password: str) -> bytes:
+    return hashlib.scrypt(password.encode("utf-8"), salt=_SALT, n=2 ** 14, r=8, p=1)
+
+
+ADMIN_USERS = {name: {"hash": hash_password(os.getenv(f"{name.upper()}_PASSWORD", default)), "role": name}
+               for name, default in _DEFAULTS.items()}
+USING_DEFAULT_PASSWORDS = any(os.getenv(f"{n.upper()}_PASSWORD", d) == d for n, d in _DEFAULTS.items())
+SESSION_HOURS = float(os.getenv("SESSION_HOURS", "8"))                       # dashboard logins expire
+WHATSAPP_VERIFY_TOKEN = os.getenv("WHATSAPP_VERIFY_TOKEN", "yatrasetu-verify")  # set your own for a real webhook
+LIVE_WEATHER = os.getenv("LIVE_WEATHER", "1") != "0"                         # allow fetching rain forecasts (Open-Meteo)
 
 # Crowd bands relative to carrying capacity (FR-10)
 CROWD_BANDS = [(0.60, "Low"), (0.85, "Moderate"), (1.00, "High"), (float("inf"), "Over capacity")]

@@ -1,0 +1,11 @@
+.git
+.venv
+__pycache__
+*.db
+.env
+paper
+report
+presentation
+docs
+tests
+.claude

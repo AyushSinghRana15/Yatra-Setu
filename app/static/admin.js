@@ -103,6 +103,14 @@ $("#r-go").onclick = async () => {
     $("#r-out").innerHTML = `<div class="result">Segment now ${badge(r.segment.level)} (${r.segment.score}/100). Travellers notified: <b>${r.notified}</b>.</div>`;
   } catch (e) { $("#r-out").innerHTML = `<div class="notice">${esc(e.message)}</div>`; }
 };
+$("#w-live").onclick = async () => {
+  $("#w-live").disabled = true;
+  try {
+    const r = await api("/api/admin/weather/refresh", {});
+    $("#w-out").innerHTML = `<div class="result">✅ Rain forecast updated: ${r.updated.map(d => `${d.district} ${d.rain_mm} mm`).join(", ")}</div>`;
+  } catch (e) { $("#w-out").innerHTML = `<div class="notice">${e.message}</div>`; }
+  $("#w-live").disabled = false;
+};
 $("#w-go").onclick = async () => {
   await api("/api/admin/weather", { district: $("#w-d").value, level: $("#w-l").value, rain_mm: +$("#w-mm").value });
   $("#w-out").innerHTML = `<div class="result">Alert saved. Route-risk scores updated for ${esc($("#w-d").value)}.</div>`;

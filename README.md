@@ -78,11 +78,14 @@ A single-page traveller site with a sticky navbar, hash routing (every view has 
 `/#crowd?shrine=badrinath`), smooth page transitions, scroll-reveal animations and photo backgrounds of
 Uttarakhand's temples and mountains.
 
-| Home: hero, ask box and floating highlights | Assistant: voice, actions, live mini-forecast |
+| Home: Kedarnath temple under the day sky, with the ask box | Assistant: voice, actions, live mini-forecast |
 |---|---|
 | <img src="docs/screenshots/web_01_home.png" alt="Home page"> | <img src="docs/screenshots/web_02_assistant.png" alt="Assistant page"> |
 | **Crowd forecast**: shrine pills, 7-day cards, capacity line | **Route risk**: live KPIs, clickable map, trip planner, alerts, route comparison |
 | <img src="docs/screenshots/web_03_crowd.png" alt="Crowd forecast page"> | <img src="docs/screenshots/web_04_route.png" alt="Route risk page"> |
+
+<p align="center"><img src="docs/screenshots/web_06_home_dark.png" alt="Home page in dark mode: the moon is up and the temple lamps are lit" width="80%"><br>
+<sub>Dark mode: the sun has set, the moon is up and the temple lamps are lit.</sub></p>
 
 <details>
 <summary><b>🧭 About page: interactive architecture, pipeline and repository map</b></summary>
@@ -123,6 +126,7 @@ flowchart LR
 - 🔠 Built for older travellers too: a three-step **text size** control (A A A) that scales the whole site, large 48px touch targets,
   high-contrast text, visible keyboard focus, a skip link, and risk levels shown as words as well as colours.
 - 🎨 One consistent SVG icon set (`icons.js`) instead of emoji, so icons line up and look the same on every device.
+- 🌗 **Light and dark mode.** The home page shows the Kedarnath temple under the sky: switching modes sets the sun, brings out the stars and the moon, and lights the temple lamps.
 - 🌙 Calm motion, with `prefers-reduced-motion` and `prefers-contrast` support.
 
 <a id="voice"></a>
@@ -422,6 +426,18 @@ Set these environment variables (or put them in `.env`) to switch on external se
 | `BHASHINI_API_KEY`, `BHASHINI_USER_ID` | Bhashini translation for Indian languages beyond English and Hindi |
 
 Without them the app runs fully offline with extractive answers.
+</details>
+
+<details>
+<summary><b>🐳 Run with Docker</b></summary>
+
+```bash
+docker build -t yatrasetu .
+docker run -p 8000:8000 -e EDITOR_PASSWORD=choose-one -e APPROVER_PASSWORD=choose-another yatrasetu
+```
+
+Dashboard passwords are stored only as salted scrypt hashes and logins expire after `SESSION_HOURS` (default 8).
+The dashboard's **Fetch live rain forecast** button pulls rainfall for the five yatra districts from Open-Meteo.
 </details>
 
 ## 📝 Data notes

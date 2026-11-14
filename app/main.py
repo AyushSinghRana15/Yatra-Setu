@@ -3,6 +3,7 @@
 Run:  uvicorn app.main:app --reload    then open http://127.0.0.1:8000
 """
 import secrets
+import time
 from datetime import date, datetime
 from urllib.parse import quote
 
@@ -11,7 +12,7 @@ from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from . import alerts, db, health, llm
+from . import alerts, config, db, health, llm, weather_feed
 from .assistant import respond
 from .config import ADMIN_USERS, BASE_DIR
 from .forecast import forecaster
@@ -89,9 +90,12 @@ class WeatherIn(BaseModel):
 
 # ---------- auth (FR-23) ----------
 def user(x_token: str = Header(default="")):
-    if x_token not in TOKENS:
+    session = TOKENS.get(x_token)
+    if session and session["expires"] < time.time():          # logins expire (SESSION_HOURS)
+        TOKENS.pop(x_token, None); session = None
+    if not session:
         raise HTTPException(401, "Login required")
-    return TOKENS[x_token]
+    return session
 
 
 def require(role):
@@ -252,7 +256,7 @@ def sos(body: SosIn):
 @app.get("/webhook/whatsapp", response_class=PlainTextResponse)
 def wa_verify(request: Request):
     p = request.query_params
-    if p.get("hub.mode") == "subscribe" and p.get("hub.verify_token") == "yatrasetu-verify":
+    if p.get("hub.mode") == "subscribe" and secrets.compare_digest(p.get("hub.verify_token", ""), config.WHATSAPP_VERIFY_TOKEN):
         return p.get("hub.challenge", "")
     raise HTTPException(403)
 
@@ -274,10 +278,12 @@ async def wa_inbound(request: Request):
 @app.post("/api/admin/login")
 def login(body: LoginIn):
     u = ADMIN_USERS.get(body.username)
-    if not u or not secrets.compare_digest(u["password"], body.password):
+    # hash the attempt even for unknown users, so response time does not reveal which usernames exist
+    attempt = config.hash_password(body.password)
+    if not u or not secrets.compare_digest(u["hash"], attempt):
         raise HTTPException(401, "Invalid credentials")
-    tok = secrets.token_urlsafe(24)
-    TOKENS[tok] = {"username": body.username, "role": u["role"]}
+    tok = secrets.token_urlsafe(32)
+    TOKENS[tok] = {"username": body.username, "role": u["role"], "expires": time.time() + config.SESSION_HOURS * 3600}
     db.audit(body.username, "login", "dashboard")
     return {"token": tok, "role": u["role"], "username": body.username}
 
@@ -311,6 +317,17 @@ def road_status(body: RoadIn, u=Depends(user)):
         return alerts.set_road_status(body.segment_id, body.status, body.reason, body.eta, u["username"])
     except ValueError as e:
         raise HTTPException(400, str(e))
+
+
+@app.post("/api/admin/weather/refresh")
+def weather_refresh(u=Depends(user)):
+    """Pull tomorrow's rain forecast for each yatra district from Open-Meteo. Official IMD alert levels are kept."""
+    if not config.LIVE_WEATHER:
+        raise HTTPException(503, "Live weather is switched off (LIVE_WEATHER=0)")
+    try:
+        return {"updated": weather_feed.refresh(u["username"])}
+    except Exception as e:  # network down, service changed: the manual form still works
+        raise HTTPException(502, f"Could not reach the weather service: {e}")
 
 
 @app.post("/api/admin/weather")

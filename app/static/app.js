@@ -121,6 +121,27 @@ function setTextSize(n, announce) {
 $$(".textsize button").forEach(b => b.onclick = () => setTextSize(b.dataset.size, true));
 setTextSize(store.get("size", 0));
 
+// light and dark mode: day and night in the hero sky. Switching plays the sunset (see theme.css).
+function setMode(mode, animate) {
+  const dark = mode === "dark", root = document.documentElement;
+  root.dataset.mode = dark ? "dark" : "light"; store.set("mode", root.dataset.mode);
+  $$(".mode-btn").forEach(b => { b.querySelector("use").setAttribute("href", dark ? "#i-sun" : "#i-moon");
+    b.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode"); b.setAttribute("aria-pressed", String(dark)); });
+  document.querySelector('meta[name="theme-color"]').content = dark ? "#0e0b1d" : "#17112e";
+  if (!animate) return;
+  root.classList.add("switching"); clearTimeout(setMode._t); setMode._t = setTimeout(() => root.classList.remove("switching"), 2000);
+  window.dispatchEvent(new Event("resize")); redrawMap();          // charts and the route map pick up the new colours
+  toast(dark ? "Dark mode" : "Light mode", 1800);
+}
+$$(".mode-btn").forEach(b => b.onclick = () => setMode(document.documentElement.dataset.mode === "dark" ? "light" : "dark", true));
+setMode(document.documentElement.dataset.mode);
+$$("[data-demo]").forEach(b => b.onclick = () => {   // sample values for demonstrations; real visitors start with empty forms
+  const fill = { health: () => { $("#h-age").value = 62; $('#health-form input[value="bp"]').checked = true; },
+    alerts: () => { $("#s-phone").value = "9876543210"; $("#s-group").value = 4; },
+    sos: () => { $("#sos-lat").value = "30.6600"; $("#sos-lon").value = "79.0300"; $("#sos-contact").value = "+919812345678"; } };
+  fill[b.dataset.demo](); toast("Demo data filled in");
+});
+
 // scroll reveal
 const io = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
   if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
@@ -221,6 +242,7 @@ async function loadHome(force) {
       <h3>${esc(isHi() ? s.name_hi : s.name)} <small style="opacity:.8;font-weight:400">${esc(isHi() ? s.name : s.name_hi)}</small></h3>
       <div class="alt">⛰️ ${s.altitude_m.toLocaleString("en-IN")} ${isHi() ? "मी" : "m"} · ${esc(s.district)}</div>
       <div class="st"><span>${tr("👥 Crowd today")}</span>${d ? badge(d.band) : "–"}</div>
+      ${d && !d.open && f.next_open ? `<div class="reopen">${isHi() ? "कपाट खुलेंगे" : "Reopens"} ${new Date(f.next_open).toLocaleDateString(isHi() ? "hi-IN" : "en-IN", { day: "numeric", month: "short", year: "numeric" })}</div>` : ""}
       <div class="st"><span>${tr("🛣️ Route")}</span>${t ? badge(t.worst.level) : "–"}</div>
       <div class="acts"><button data-act="crowd" data-id="${s.id}">${tr("Forecast")}</button><button data-act="route" data-id="${s.id}">${tr("Route")}</button></div>
     </div>`;
@@ -256,6 +278,12 @@ const FOLLOW_HI = {
 let HISTORY = store.get("chat", []);
 let lastAnswer = null;
 
+const userMsg = (text, voice) => `${voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : ""}<span class="q-text">${esc(text)}</span>
+  <button type="button" class="edit-q" title="${esc(tr("Edit and ask again"))}" aria-label="${esc(tr("Edit and ask again"))}"><svg class="ic" aria-hidden="true"><use href="#i-edit"/></svg></button>`;
+document.addEventListener("click", e => {
+  const b = e.target.closest(".edit-q"); if (!b) return;
+  $("#q").value = b.parentElement.querySelector(".q-text").textContent; $("#q").focus(); $("#q").select();
+});
 function addMsg(html, cls) {
   const d = document.createElement("div"); d.className = "msg " + cls; d.innerHTML = html;
   $("#chat").appendChild(d); $("#chat").scrollTop = 1e6; return d;
@@ -308,7 +336,7 @@ function renderHistory() {
   $("#chat").innerHTML = "";
   addMsg(esc(greeting()), "bot");
   HISTORY.forEach(h => {
-    if (h.role === "user") addMsg((h.voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : "") + esc(h.text), "user");
+    if (h.role === "user") addMsg(userMsg(h.text, h.voice), "user");
     else { const el = addMsg("", "bot"); renderBot(h.r, el); lastAnswer = h.r; }
   });
 }
@@ -346,7 +374,7 @@ async function ask(text, opts = {}) {
   text = (text || "").trim();
   if (!text || busy) return;
   busy = true; $("#send").disabled = true;
-  addMsg((opts.voice ? `<span class="via">${tr("🎙️ spoken")}</span>` : "") + esc(text), "user"); $("#q").value = "";
+  addMsg(userMsg(text, opts.voice), "user"); $("#q").value = "";
   HISTORY.push({ role: "user", text, voice: !!opts.voice });
   const wait = addMsg(`<span class="typing"><i></i><i></i><i></i></span>`, "bot");
   try {
@@ -490,7 +518,9 @@ async function showSegment(id, scroll) {
 }
 
 function nearMe() {
-  const fallback = () => showNearby(+$("#sos-lat").value, +$("#sos-lon").value, true);
+  const fallback = () => { const la = parseFloat($("#sos-lat").value), lo = parseFloat($("#sos-lon").value);
+    if (Number.isFinite(la) && Number.isFinite(lo)) showNearby(la, lo, true);
+    else toast(isHi() ? "लोकेशन की अनुमति दें, या SOS फ़ॉर्म में निर्देशांक लिखें।" : "Allow location access, or enter your coordinates in the SOS form.", 5000); };
   if (!navigator.geolocation) { toast(isHi() ? "लोकेशन उपलब्ध नहीं; SOS फ़ॉर्म के निर्देशांक इस्तेमाल हो रहे हैं।" : "Location is unavailable; using the coordinates from the SOS form."); return fallback(); }
   toast("Finding your location…");
   navigator.geolocation.getCurrentPosition(p => showNearby(p.coords.latitude, p.coords.longitude),

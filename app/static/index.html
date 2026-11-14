@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#17112e">
   <meta name="description" content="YatraSetu AI – multilingual, voice-enabled safe-travel and crowd advisory assistant for the Char Dham and Hemkund Sahib yatra in Uttarakhand.">
   <title>YatraSetu AI – Safe Yatra Assistant</title>
+  <script>/* light or dark before first paint: saved choice, else the device setting */
+    try { document.documentElement.dataset.mode = JSON.parse(localStorage.getItem("ys_mode")) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
+    catch (e) { document.documentElement.dataset.mode = "light"; }</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
@@ -32,6 +35,7 @@
     <a href="#alerts" data-page="alerts">🔔 Alerts</a>
     <a href="#about" data-page="about">🧭 About</a>
     <a href="/admin" class="only-mobile">🏛️ Officials' dashboard</a>
+    <div class="mode-row"><span>Dark mode</span><button type="button" class="icon-btn mode-btn" aria-label="Switch to dark mode" title="Light or dark mode"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></button></div>
     <div class="textsize-row"><span>Text size</span><div class="textsize" role="group" aria-label="Text size"><button type="button" data-size="0" title="Normal text" aria-label="Normal text">A</button><button type="button" data-size="1" title="Large text" aria-label="Large text">A</button><button type="button" data-size="2" title="Largest text" aria-label="Largest text">A</button></div></div>
   </nav>
   <div class="nav-actions">
@@ -39,6 +43,7 @@
       <option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option>
     </select>
     <div class="textsize only-desktop" role="group" aria-label="Text size"><button type="button" data-size="0" title="Normal text" aria-label="Normal text">A</button><button type="button" data-size="1" title="Large text" aria-label="Large text">A</button><button type="button" data-size="2" title="Largest text" aria-label="Largest text">A</button></div>
+    <button type="button" class="icon-btn mode-btn" aria-label="Switch to dark mode" title="Light or dark mode"><svg class="ic" aria-hidden="true"><use href="#i-moon"/></svg></button>
     <button class="icon-btn mic" id="nav-mic" title="Voice command" aria-label="Start voice command"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
     <a class="sos-pill" href="#alerts" data-sos title="Emergency SOS">SOS</a>
     <a class="officials only-desktop" href="/admin">Officials →</a>
@@ -50,7 +55,45 @@
 
 <!-- ================= HOME ================= -->
 <section class="page" id="page-home" data-title="Home">
-  <div class="hero bg-kedarnath">
+  <div class="hero">
+    <!-- the scene: sky, sun and moon, Himalayan ranges and the Kedarnath temple (decorative) -->
+    <div class="sky" aria-hidden="true">
+      <div class="sky-day"></div><div class="sky-night"></div><div class="sky-dusk"></div><div class="stars"></div>
+      <div class="orb sun"></div><div class="orb moon"></div>
+      <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+      <svg class="range" viewBox="0 0 1440 500" preserveAspectRatio="none">
+        <path class="r-far" d="M0 500V260l120-70 110 60L380 90l90 80 90-50 140 130 140-100 120 80 130-100 130 110 120-70 100 60v270z"/>
+        <path class="r-snow" d="M380 90l42 37-22-4-16 18-18-16-22 4zM560 120l36 32-22-4-14 16-18-16-18 2zM1090 130l40 34-24-4-14 18-20-16-20 2zM840 150l30 24-18-2-12 14-14-14-16 2z"/>
+        <path class="r-mid" d="M0 500V340l160-60 140 70 160-100 160 90 160-70 160 80 160-70 160 70 180-60v210z"/>
+        <path class="r-near" d="M0 500v-90l200-50 220 60 220-50 220 60 220-50 220 50 140-30v100z"/>
+        <path class="r-ground" d="M0 500v-48q360-20 720-2t720-4v54z"/>
+      </svg>
+      <svg class="temple" viewBox="0 0 520 600">
+        <defs><radialGradient id="lamp"><stop offset="0" stop-color="#ffd27a" stop-opacity=".95"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient></defs>
+        <path class="t-stone" d="M166 372l20-196q74-56 148 0l20 196z"/>
+        <path class="t-shade" opacity=".55" d="M260 148q40 4 74 28l20 196h-94z"/>
+        <path class="t-line" stroke-width="3" d="M183 206h154M180 236h160M177 266h166M174 296h172M171 326h178M169 352h182"/>
+        <rect class="t-wood" x="204" y="120" width="112" height="30" rx="3"/>
+        <path class="t-wood-d" d="M186 122l74-44 74 44z"/>
+        <path class="t-snow" d="M196 116l64-38 64 38-24-6-40-22-40 22z"/>
+        <circle class="t-gold" cx="260" cy="64" r="10"/><path class="t-gold" d="M256 56l4-26 4 26z"/>
+        <path class="t-flag" d="M260 30l32 10-32 10z"/>
+        <rect class="t-stone" x="108" y="372" width="304" height="152"/>
+        <rect class="t-shade" opacity=".45" x="260" y="372" width="152" height="152"/>
+        <path class="t-wood-d" d="M92 376l168-84 168 84z"/>
+        <path class="t-wood" d="M112 370l148-70 148 70z"/>
+        <path class="t-snow" d="M92 376l168-84 168 84-24-4-144-68-144 68z"/>
+        <path class="t-line" stroke-width="3" d="M108 410h304M108 448h304M108 486h304"/>
+        <path class="t-wood" d="M214 524v-88a46 46 0 0 1 92 0v88z"/>
+        <path class="t-gold" d="M222 524v-86a38 38 0 0 1 76 0v86z"/>
+        <path class="t-door" d="M230 524v-84a30 30 0 0 1 60 0v84z"/>
+        <path class="t-shade" d="M138 500v-48a14 14 0 0 1 28 0v48zM354 500v-48a14 14 0 0 1 28 0v48z"/>
+        <rect class="t-step" x="70" y="524" width="380" height="18"/><rect class="t-step" x="40" y="542" width="440" height="20"/><rect class="t-step" x="10" y="562" width="500" height="24"/>
+        <rect class="t-wood-d" x="456" y="330" width="5" height="232"/><path class="t-flag" d="M461 334l45 14-45 16z"/>
+        <circle class="t-glow" cx="260" cy="486" r="130" fill="url(#lamp)"/>
+        <g class="t-glow"><circle cx="96" cy="552" r="26" fill="url(#lamp)"/><circle cx="424" cy="552" r="26" fill="url(#lamp)"/><circle cx="96" cy="552" r="5" fill="#ffd27a"/><circle cx="424" cy="552" r="5" fill="#ffd27a"/></g>
+      </svg>
+    </div>
     <div class="hero-inner">
       <div class="hero-copy">
         <span class="eyebrow reveal">🙏 Char Dham · Hemkund Sahib · 2026 season</span>
@@ -287,14 +330,14 @@
       <div class="card" id="health-form">
         <h2>Self-check</h2>
         <div class="row">
-          <div><label for="h-age">Age</label><input type="number" id="h-age" value="62" min="1" max="110"></div>
+          <div><label for="h-age">Age</label><input type="number" id="h-age" placeholder="e.g. 62" min="1" max="110" inputmode="numeric"></div>
           <div><label for="h-shrine">Destination</label><select id="h-shrine"></select></div>
           <div><label for="h-fit">Walking fitness</label><select id="h-fit"><option value="high">Can walk 10 km easily</option>
             <option value="medium" selected>Can walk 5 km</option><option value="low">Struggle to walk 5 km</option></select></div>
         </div>
         <label>Known conditions</label>
         <div class="check-grid">
-          <label class="check"><input type="checkbox" value="bp" checked> High blood pressure</label>
+          <label class="check"><input type="checkbox" value="bp"> High blood pressure</label>
           <label class="check"><input type="checkbox" value="diabetes"> Diabetes</label>
           <label class="check"><input type="checkbox" value="heart"> Heart disease</label>
           <label class="check"><input type="checkbox" value="asthma"> Asthma / lung disease</label>
@@ -306,7 +349,7 @@
           <label class="check"><input type="checkbox" class="rf" value="breathless_rest"> Breathlessness at rest</label>
           <label class="check"><input type="checkbox" class="rf" value="recent_surgery"> Surgery / heart attack in last 6 months</label>
         </div>
-        <div style="margin-top:14px"><button class="btn saff" id="h-go">Check readiness</button></div>
+        <div style="margin-top:14px;display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn saff" id="h-go">Check readiness</button><button type="button" class="chip-btn" data-demo="health">Fill demo data</button></div>
       </div>
       <div class="card"><h2>Your readiness plan</h2><div id="h-out" class="muted">Fill in the form to get guidance.</div></div>
     </div>
@@ -324,12 +367,12 @@
       <div class="card">
         <h2>Subscribe my trip for alerts</h2>
         <div class="row">
-          <div><label for="s-phone">Mobile (WhatsApp)</label><input id="s-phone" value="9876543210"></div>
+          <div><label for="s-phone">Mobile (WhatsApp)</label><input id="s-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 9876543210"></div>
           <div><label for="s-lang">Alert language</label><select id="s-lang"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
         </div>
         <div class="row">
           <div><label for="s-shrine">Destination</label><select id="s-shrine"></select></div>
-          <div><label for="s-group">Group size</label><input type="number" id="s-group" value="4"></div>
+          <div><label for="s-group">Group size</label><input type="number" id="s-group" value="1" min="1" max="60" inputmode="numeric"></div>
         </div>
         <div class="row">
           <div><label for="s-from">From</label><input type="date" id="s-from"></div>
@@ -337,19 +380,20 @@
         </div>
         <label class="check" style="margin-top:12px"><input type="checkbox" id="s-consent"> I agree that YatraSetu stores my trip
           details only to send safety alerts, and deletes them 90 days after the trip.</label>
-        <div style="margin-top:10px"><button class="btn" id="s-go">Subscribe</button></div>
+        <div style="margin-top:10px;display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn" id="s-go">Subscribe</button><button type="button" class="chip-btn" data-demo="alerts">Fill demo data</button></div>
         <div id="s-out"></div>
       </div>
       <div class="card sos-card" id="sos-card">
         <h2>🚨 Emergency SOS</h2>
         <p class="muted">Finds the nearest medical help, opens the 112 dialler and prepares a location message for your family.</p>
         <div class="row">
-          <div><label for="sos-lat">Latitude</label><input id="sos-lat" value="30.6600"></div>
-          <div><label for="sos-lon">Longitude</label><input id="sos-lon" value="79.0300"></div>
+          <div><label for="sos-lat">Latitude</label><input id="sos-lat" inputmode="decimal" placeholder="e.g. 30.6600"></div>
+          <div><label for="sos-lon">Longitude</label><input id="sos-lon" inputmode="decimal" placeholder="e.g. 79.0300"></div>
           <div style="flex:0"><button class="btn ghost" id="sos-locate" title="Use my phone's location">📍 Locate me</button></div>
         </div>
-        <label for="sos-contact">Emergency contact</label><input id="sos-contact" value="+919812345678">
+        <label for="sos-contact">Emergency contact</label><input id="sos-contact" type="tel" inputmode="tel" placeholder="e.g. +919812345678">
         <div style="margin-top:12px"><button class="btn red big-sos" id="sos-go">🚨 SOS</button></div>
+        <div style="margin-top:.6rem"><button type="button" class="chip-btn" data-demo="sos">Fill demo data</button></div>
         <div id="sos-out"></div>
         <h3>Offline emergency card</h3>
         <div class="notice">Emergency 112 · Ambulance 108 · Cyber fraud 1930. Add this site to your home screen and the card

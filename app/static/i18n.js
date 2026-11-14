@@ -172,6 +172,8 @@
     "Text size: normal": "अक्षर का आकार: सामान्य", "Text size: large": "अक्षर का आकार: बड़ा", "Text size: largest": "अक्षर का आकार: सबसे बड़ा",
     "Traditional portals publish static notices and PDFs. YatraSetu turns them into live, personal answers. Tap a card to open that feature.":
       "पारंपरिक पोर्टल स्थिर सूचनाएँ और PDF देते हैं। यात्रासेतु उन्हें लाइव, व्यक्तिगत उत्तरों में बदलता है। कोई कार्ड टैप करके वह सुविधा खोलें।",
+    "Dark mode": "डार्क मोड", "Light mode": "लाइट मोड", "Fill demo data": "डेमो डेटा भरें", "Demo data filled in": "डेमो डेटा भर दिया गया",
+    "Edit and ask again": "सुधारें और दोबारा पूछें",
     "Answer copied": "उत्तर कॉपी हो गया", "Chat cleared": "बातचीत साफ हो गई",
   };
   // Dynamic content that is not a straight lookup.

@@ -1,6 +1,6 @@
 // Service worker: keeps the app shell (and its emergency card) available offline (NFR-09).
 // Network-first for same-origin pages and assets, so updates show up at once; cache is the offline fallback.
-const CACHE = "yatrasetu-v8";
+const CACHE = "yatrasetu-v9";
 const ASSETS = ["/", "/static/style.css", "/static/theme.css", "/static/app.js", "/static/icons.js", "/static/voice.js", "/static/i18n.js", "/static/charts.js", "/static/manifest.json"];
 self.addEventListener("install", e => { self.skipWaiting(); e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS))); });
 self.addEventListener("activate", e => e.waitUntil(

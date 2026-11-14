@@ -1,6 +1,6 @@
 /* Himalayan Dawn: the site's look, layered on the structural rules in style.css.
-   An indigo night sky fading into a saffron sunrise, an editorial serif for headings, a floating glass
-   header, a cinematic hero and soft, deep cards. Everything here is cosmetic: layout hooks, features and
+   An editorial serif for headings, a floating glass header, soft deep cards, and a sky hero with the
+   Kedarnath temple that turns from day to night with light and dark mode. Everything here is cosmetic: layout hooks, features and
    accessibility (rem type, contrast, 48px targets, focus rings) come from style.css unchanged. */
 
 /* ---------- colours and type ---------- */
@@ -20,7 +20,6 @@ html .nav { top: .75rem; margin: .75rem auto 0; width: min(80rem, calc(100% - 1.
   background: color-mix(in srgb, var(--night) 80%, transparent); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
   border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 14px 40px rgba(0, 0, 0, .26); }
 html .hero, html .banner { margin-top: calc(-1 * var(--nav-h, 7rem) - .75rem); }
-html .hero-inner { padding-top: calc(var(--nav-h, 7rem) + 4.5rem); padding-bottom: 9rem; z-index: 2; }
 html .banner { padding-top: calc(var(--nav-h, 7rem) + 3.25rem); padding-bottom: 6.5rem; overflow: hidden;
   background: linear-gradient(100deg, color-mix(in srgb, var(--night) 95%, transparent), color-mix(in srgb, var(--night) 72%, transparent) 55%, color-mix(in srgb, var(--night) 34%, transparent)),
               var(--img) center 40% / cover, var(--night); }
@@ -39,27 +38,6 @@ html .lang, html .textsize, html .sos-pill { border-radius: 999px; }
   html .nav-links { top: calc(var(--nav-h, 4rem) + 1.25rem); left: .75rem; right: .75rem; border-radius: 1.25rem; border: 1px solid rgba(255, 255, 255, .16); }
   html .nav-links a { border-radius: .9rem; }
 }
-
-/* cinematic hero: glowing sun, layered ridgeline, big headline */
-html .hero { min-height: min(58rem, 100vh); background: linear-gradient(180deg, var(--hero-a) 0%, var(--hero-b) 44%, var(--hero-c) 100%), var(--img) center 35% / cover no-repeat, var(--night); }
-html .hero::before { content: ""; position: absolute; width: 48rem; height: 48rem; right: -12rem; top: -6rem; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--gold) 60%, transparent), color-mix(in srgb, var(--saff-2) 22%, transparent) 55%, transparent);
-  animation: sunGlow 9s ease-in-out infinite alternate; }
-html .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 15rem; pointer-events: none; z-index: 1; opacity: .5; background: var(--night);
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220' preserveAspectRatio='none'%3E%3Cpath d='M0 220V120l110-50 90 40 130-90 120 80 100-45 140 75 110-95 150 85 120-60 130 70 140-80 100 45v125z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat;
-          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220' preserveAspectRatio='none'%3E%3Cpath d='M0 220V120l110-50 90 40 130-90 120 80 100-45 140 75 110-95 150 85 120-60 130 70 140-80 100 45v125z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat; }
-html .ridge { z-index: 2; height: 4.5rem; } html .scroll-cue { z-index: 3; }
-html .hero h1 { font-size: clamp(2.4rem, 6.2vw, 4.7rem); letter-spacing: -.025em; line-height: 1.04; }
-html .grad { background: linear-gradient(92deg, var(--gold), var(--saff-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-html .lead { font-size: clamp(1.1rem, 1.6vw, 1.3rem); }
-html .hero-ask { border-radius: 999px; padding: .5rem .5rem .5rem .9rem; box-shadow: 0 0 0 .4rem rgba(255, 255, 255, .16), 0 24px 60px -12px rgba(0, 0, 0, .5); }
-html .hero-ask input { border-radius: 999px; }
-@media (max-width: 560px) { html .hero-ask { border-radius: 1.5rem; padding: .6rem; } }
-html .hero-chips button { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-html .glass { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .34); border-radius: 1.4rem; padding: 1.15rem 1.3rem;
-  backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); box-shadow: 0 24px 50px -14px rgba(0, 0, 0, .45); }
-html .glass > span { background: linear-gradient(135deg, var(--saff-2), var(--gold)); color: #fff; }
-@media (min-width: 1001px) { html .glass.f1 { margin-right: 2.5rem; } html .glass.f2 { margin-left: 2.5rem; } html .glass.f3 { margin-right: 1.25rem; margin-left: 1.25rem; } }
 
 /* soft, deep cards and pill buttons */
 html .card, html .feature, html .kpi, html .emergency { border-radius: 1.5rem; }
@@ -102,7 +80,122 @@ html .fab.mic { background: linear-gradient(135deg, var(--saff-2), var(--saff));
   html .fab-group { bottom: calc(5.6rem + env(safe-area-inset-bottom)); }
   html .site-footer { padding-bottom: 7rem; }
 }
-@keyframes sunGlow { from { transform: translate(0, 0) scale(1); opacity: .75; } to { transform: translate(-2rem, 1.5rem) scale(1.12); opacity: 1; } }
+/* ---------- sky hero: Kedarnath temple on the left, the sky on the right ----------
+   Light mode is day and dark mode is night. Switching modes plays a sunset: the sun sinks behind the
+   ridge, dusk glows, the stars come out, the moon rises and the temple lamps are lit. */
+html .hero { min-height: min(56rem, 100vh); color: var(--sky-ink); background: var(--sky-bottom); align-items: stretch; isolation: isolate; }
+html .sky, html .sky > * { position: absolute; inset: 0; pointer-events: none; }
+html .sky { z-index: 0; overflow: hidden; }
+html .sky-day { background: linear-gradient(180deg, #7fb6ea 0%, #b9dbf6 42%, #fde3c2 78%, #ffd0a1 100%); transition: opacity 1.8s ease; }
+html .sky-night { background: linear-gradient(180deg, #070616 0%, #15123a 45%, #2b2261 80%, #4a3a86 100%); opacity: 0; transition: opacity 1.8s ease; }
+html .sky-dusk { background: linear-gradient(180deg, transparent 0%, rgba(255, 120, 60, .0) 30%, rgba(255, 120, 60, .75) 78%, rgba(255, 190, 90, .9) 100%); opacity: 0; }
+html .stars { opacity: 0; transition: opacity 1.8s ease .4s; background-repeat: repeat; background-size: 520px 420px;
+  background-image: radial-gradient(1.6px 1.6px at 40px 60px, #fff, transparent), radial-gradient(1.2px 1.2px at 150px 120px, #fff, transparent), radial-gradient(1.8px 1.8px at 260px 40px, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 340px 180px, #fff, transparent), radial-gradient(1.5px 1.5px at 470px 90px, #fff, transparent), radial-gradient(1.2px 1.2px at 90px 230px, #fff, transparent),
+    radial-gradient(1.7px 1.7px at 210px 300px, #fff, transparent), radial-gradient(1.1px 1.1px at 420px 260px, #fff, transparent), radial-gradient(1.3px 1.3px at 500px 350px, #fff, transparent),
+    radial-gradient(1.4px 1.4px at 300px 380px, #fff, transparent);
+  -webkit-mask: linear-gradient(180deg, #000 30%, transparent 78%); mask: linear-gradient(180deg, #000 30%, transparent 78%); animation: twinkle 5s ease-in-out infinite alternate; }
+html .orb { inset: auto; top: 15%; left: 33%; width: 8.5rem; height: 8.5rem; border-radius: 50%; transition: transform 1.9s cubic-bezier(.5, 0, .3, 1), opacity 1.5s ease; }
+html .sun { background: radial-gradient(circle at 40% 38%, #fff8dc, #ffd25e 45%, #ff9d2e 100%); box-shadow: 0 0 0 1.6rem rgba(255, 214, 110, .22), 0 0 0 3.6rem rgba(255, 214, 110, .12), 0 0 7rem 3rem rgba(255, 190, 80, .55); }
+html .moon { background: radial-gradient(circle at 36% 34%, #ffffff, #e9ecff 55%, #c6cbee 100%); box-shadow: 0 0 0 1.2rem rgba(200, 208, 255, .1), 0 0 5.5rem 1.5rem rgba(190, 200, 255, .42);
+  transform: translate(7rem, 34rem); opacity: 0; }
+html .moon::before, html .moon::after { content: ""; position: absolute; border-radius: 50%; background: rgba(150, 158, 205, .5); }
+html .moon::before { width: 22%; height: 22%; left: 24%; top: 30%; } html .moon::after { width: 13%; height: 13%; left: 56%; top: 58%; box-shadow: -1.6rem -2.3rem 0 -.1rem rgba(150, 158, 205, .4); }
+html .cloud { inset: auto; height: 3.4rem; border-radius: 3rem; background: rgba(255, 255, 255, .88); filter: blur(1.5px); transition: opacity 1.8s ease, background 1.8s ease; animation: drift 60s linear infinite alternate; }
+html .cloud::before { content: ""; position: absolute; left: 18%; bottom: 40%; width: 46%; height: 150%; border-radius: 50%; background: inherit; }
+html .cloud.c1 { top: 27%; left: 30%; width: 10.5rem; } html .cloud.c2 { top: 36%; left: 68%; width: 9.5rem; height: 2.6rem; animation-duration: 80s; } html .cloud.c3 { top: 12%; left: 24%; width: 8rem; height: 2.3rem; animation-duration: 95s; opacity: .7; }
+html .range { inset: auto 0 0 0; width: 100%; height: 62%; }
+html .range path { transition: fill 1.8s ease; }
+html .r-far { fill: #a9bfdf; } html .r-snow { fill: #ffffff; } html .r-mid { fill: #7f97bd; } html .r-near { fill: #5a6f95; } html .r-ground { fill: #e7edf6; }
+html .temple { inset: auto auto 2.6rem 5%; height: min(74%, 34rem); width: auto; aspect-ratio: 520 / 600; filter: drop-shadow(0 1.2rem 1.6rem rgba(20, 16, 50, .35)); }
+html .temple * { transition: fill 1.8s ease, opacity 1.8s ease, stroke 1.8s ease; }
+html .t-stone { fill: #b3aaa0; } html .t-shade { fill: #8f867d; } html .t-line { stroke: #7a7269; fill: none; } html .t-wood { fill: #74502f; } html .t-wood-d { fill: #563a21; }
+html .t-gold { fill: #f0ae2c; } html .t-door { fill: #3b2414; } html .t-flag { fill: #e8791c; } html .t-step { fill: #cfc8bf; } html .t-snow { fill: #ffffff; } html .t-glow { opacity: 0; }
+/* night */
+html[data-mode="dark"] .sky-day { opacity: 0; } html[data-mode="dark"] .sky-night { opacity: 1; } html[data-mode="dark"] .stars { opacity: 1; }
+html[data-mode="dark"] .sun { transform: translate(-9rem, 36rem) scale(1.25); opacity: 0; }
+html[data-mode="dark"] .moon { transform: none; opacity: 1; }
+html[data-mode="dark"] .cloud { background: rgba(150, 150, 205, .22); }
+html[data-mode="dark"] .r-far { fill: #2c2a5e; } html[data-mode="dark"] .r-snow { fill: #b9c0ee; } html[data-mode="dark"] .r-mid { fill: #211f4b; } html[data-mode="dark"] .r-near { fill: #17153a; } html[data-mode="dark"] .r-ground { fill: #141230; }
+html[data-mode="dark"] .t-stone { fill: #55507a; } html[data-mode="dark"] .t-shade { fill: #403c63; } html[data-mode="dark"] .t-line { stroke: #322e52; } html[data-mode="dark"] .t-wood { fill: #45303a; } html[data-mode="dark"] .t-wood-d { fill: #33232c; }
+html[data-mode="dark"] .t-gold { fill: #ffd166; } html[data-mode="dark"] .t-door { fill: #ffb84d; } html[data-mode="dark"] .t-step { fill: #3b375e; } html[data-mode="dark"] .t-snow { fill: #cfd5fb; } html[data-mode="dark"] .t-glow { opacity: 1; }
+html.switching .sky-dusk { animation: dusk 1.9s ease both; }
+/* words over the sky */
+html .hero { --sky-ink: #17112e; --sky-bottom: #e7edf6; }
+html[data-mode="dark"] .hero { --sky-ink: #ffffff; --sky-bottom: #141230; }
+html .hero-inner { z-index: 2; grid-template-columns: minmax(0, .82fr) minmax(0, 1fr); padding-top: calc(var(--nav-h, 7rem) + 4rem); padding-bottom: 8rem; align-items: center; }
+html .hero-copy { grid-column: 2; transition: color 1.2s ease; }
+html .hero-float { display: none; }
+html .hero h1 { font-size: clamp(2.3rem, 5.4vw, 4.3rem); letter-spacing: -.025em; line-height: 1.05; text-shadow: 0 2px 24px rgba(255, 255, 255, .5); }
+html[data-mode="dark"] .hero h1 { text-shadow: 0 2px 28px rgba(0, 0, 0, .55); }
+html .grad { background: linear-gradient(92deg, #c2410c, #e8791c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html[data-mode="dark"] .grad { background: linear-gradient(92deg, var(--gold), var(--saff-2)); -webkit-background-clip: text; background-clip: text; }
+html .lead { font-size: clamp(1.1rem, 1.6vw, 1.3rem); font-weight: 500; }
+html .hero .eyebrow { color: #7a2c06; background: rgba(255, 255, 255, .72); border-color: rgba(122, 44, 6, .3); }
+html[data-mode="dark"] .hero .eyebrow { color: #ffe0b8; background: rgba(0, 0, 0, .35); border-color: rgba(255, 255, 255, .35); }
+html .hero-ask { border-radius: 999px; padding: .5rem .5rem .5rem .9rem; box-shadow: 0 0 0 .4rem rgba(255, 255, 255, .4), 0 24px 60px -16px rgba(23, 17, 46, .45); }
+html[data-mode="dark"] .hero-ask { box-shadow: 0 0 0 .4rem rgba(255, 255, 255, .12), 0 24px 60px -12px rgba(0, 0, 0, .6); }
+html .hero-ask input { border-radius: 999px; }
+html .hero-chips button { background: rgba(255, 255, 255, .78); color: #17112e; border-color: rgba(23, 17, 46, .28); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+html .hero-chips button:hover { background: #fff; border-color: #17112e; }
+html[data-mode="dark"] .hero-chips button { background: rgba(10, 8, 30, .6); color: #fff; border-color: rgba(255, 255, 255, .45); }
+html[data-mode="dark"] .hero-chips button:hover { background: rgba(10, 8, 30, .9); border-color: #fff; }
+html .ridge { z-index: 2; height: 3.2rem; } html .scroll-cue { z-index: 3; bottom: 2.2rem; color: var(--sky-ink); border-color: currentColor; background: rgba(255, 255, 255, .5); }
+html[data-mode="dark"] .scroll-cue { background: rgba(8, 6, 26, .5); }
+@media (max-width: 1000px) {
+  html .hero-inner { grid-template-columns: 1fr; padding-top: calc(var(--nav-h, 5rem) + 2.5rem); padding-bottom: 21rem; }
+  html .hero-copy { grid-column: 1; }
+  html .temple { height: 17rem; left: 50%; translate: -50% 0; bottom: 2.4rem; }
+  html .orb { width: 5rem; height: 5rem; top: auto; left: auto; bottom: 16.5rem; right: 8%; }
+  html .cloud.c1 { left: 6%; top: auto; bottom: 19rem; } html .cloud.c2, html .cloud.c3 { display: none; }
+  html .range { height: 22rem; }
+}
+@media (max-width: 560px) { html .hero-ask { border-radius: 1.5rem; padding: .6rem; } }
+@keyframes dusk { 0% { opacity: 0; } 45% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes twinkle { from { filter: brightness(.75); } to { filter: brightness(1.3); } }
+@keyframes drift { from { transform: translateX(-3rem); } to { transform: translateX(4rem); } }
+
+/* ---------- dark mode for the rest of the site ---------- */
+html { transition: background-color .8s ease; } body, html .card, html .feature { transition: background-color .8s ease, color .6s ease, border-color .8s ease; }
+html[data-mode="dark"] { color-scheme: dark;
+  --bg: #0e0b1d; --card: #19152e; --tint: #221d3c; --rule: #352e58; --ink: #ece8f7; --muted: #b9b2d3; --heading: #f7f2ff; --accent: #c4b9ff; --field: #655e90;
+  --teal: #5847c0; --teal-2: #7a69e2; --teal-l: #2b2452; --saff-l: #3b2513; --on-saff: #ffd8a8; --focus: #9bbcff;
+  --shadow: 0 2px 4px rgba(0, 0, 0, .3), 0 14px 34px rgba(0, 0, 0, .45); }
+html[data-mode="dark"] a { color: var(--accent); } html[data-mode="dark"] .foot a, html[data-mode="dark"] header.top a { color: #dbe7eb; }
+html[data-mode="dark"] a:focus-visible, html[data-mode="dark"] button:focus-visible, html[data-mode="dark"] input:focus-visible, html[data-mode="dark"] select:focus-visible { box-shadow: 0 0 0 2px #0e0b1d; }
+html[data-mode="dark"] .card, html[data-mode="dark"] .feature { border-color: var(--rule); box-shadow: var(--shadow); }
+html[data-mode="dark"] button.btn:hover, html[data-mode="dark"] a.btn:hover { background: var(--teal-2); }
+html[data-mode="dark"] .btn.ghost { color: var(--heading) !important; }
+html[data-mode="dark"] .quick button, html[data-mode="dark"] .chip-btn, html[data-mode="dark"] .msg-tools button.act { border-color: #7a5326; }
+html[data-mode="dark"] .quick button:hover, html[data-mode="dark"] .chip-btn:hover { background: #4a2f18; }
+html[data-mode="dark"] :is(.msg.sos, .tl-stop.blocked > div, .emergency, input.invalid) { background: #3a1614; }
+html[data-mode="dark"] .feature[data-sos] .fi { background: rgba(255, 255, 255, .16); }
+html[data-mode="dark"] .emergency, html[data-mode="dark"] .sos-card, html[data-mode="dark"] .em-nums a, html[data-mode="dark"] .tl-stop.blocked > div { border-color: #8a332c; }
+html[data-mode="dark"] .em-nums a { background: var(--card); color: var(--ink); }
+html[data-mode="dark"] :is(.em-nums b, .emergency h3, .sos-card h2) { color: #ff9d92; }
+html[data-mode="dark"] .tl-halt > div { background: #211f45; border-color: #4a4a8a; } html[data-mode="dark"] .tl-halt .dot { background: #2a2858; border-color: #4a4a8a; }
+html[data-mode="dark"] .tl-stop.blocked .dot { background: #3a1614; }
+html[data-mode="dark"] .pipeline-mini li.on { background: #173626; }
+html[data-mode="dark"] .layer { border-color: var(--rule); } html[data-mode="dark"] .layer.ai { background: #2e2014; border-color: #6b4a22; }
+html[data-mode="dark"] .layer .group { background: #1b2040; border-color: #36407a; } html[data-mode="dark"] .layer .group.ext { background: #261d42; border-color: #4c3d80; }
+html[data-mode="dark"] .layer.split { background: none; }
+html[data-mode="dark"] :is(.pstep.on, .leaf[data-file]:hover) { background: #2e2014; }
+html[data-mode="dark"] .node.sel { background: var(--teal); border-color: var(--teal-2); }
+html[data-mode="dark"] .voice-note { background: #33290f; border-color: #6b5a22; color: #f3dfa0; }
+html[data-mode="dark"] .score-bar { background: var(--tint); }
+html[data-mode="dark"] .skeleton { background: linear-gradient(90deg, #1c1834 25%, #2a2450 50%, #1c1834 75%); background-size: 200% 100%; }
+html[data-mode="dark"] .ic-ok { color: #5fd39a; } html[data-mode="dark"] .ic-warn { color: #f5c063; } html[data-mode="dark"] .ic-ban { color: #ff8a80; }
+html[data-mode="dark"] .card h3, html[data-mode="dark"] .feature .go, html[data-mode="dark"] .eyebrow { color: #ffb877; }
+html[data-mode="dark"] .eyebrow { background: #3b2513; border-color: #7a5326; }
+html[data-mode="dark"] .tabbar { background: rgba(25, 21, 46, .95); border-color: var(--rule); }
+html[data-mode="dark"] .tabbar a.active { color: #fff; background: var(--teal-l); } html[data-mode="dark"] .tabbar a.tab-sos { color: #ff9d92; } html[data-mode="dark"] .tabbar a.tab-sos.active { background: #3a1614; }
+html[data-mode="dark"] .vo-lang { border-color: var(--teal-2); } html[data-mode="dark"] .vo-lang button { background: var(--card); color: var(--accent); } html[data-mode="dark"] .vo-lang button[aria-pressed="true"] { background: var(--teal); color: #fff; }
+html[data-mode="dark"] .shrine-pills button.on { background: var(--teal); color: #fff; border-color: var(--teal-2); }
+html[data-mode="dark"] .site-footer { background: #0a0817; }
+html .nav-links .mode-row { display: none; }
+@media (max-width: 1000px) { html .nav-links .mode-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .6rem 1rem 0; font-weight: 600; } }
+@media (max-width: 560px) { html .nav-actions > .mode-btn { display: none; } }
+
 /* phones: the logo alone identifies the site, so the controls keep their full size; roomier cards */
 @media (max-width: 560px) {
   html .brand-text { display: none; }

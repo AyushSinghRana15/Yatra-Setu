@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>YatraSetu AI – Officials' Dashboard</title>
+  <script>/* light or dark before first paint: saved choice, else the device setting */
+    try { document.documentElement.dataset.mode = JSON.parse(localStorage.getItem("ys_mode")) || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"); }
+    catch (e) { document.documentElement.dataset.mode = "light"; }</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
@@ -84,7 +87,9 @@
             <div><label>Level</label><select id="w-l"><option>None</option><option>Yellow</option><option selected>Orange</option><option>Red</option></select></div>
             <div><label>Rain (mm)</label><input id="w-mm" value="85"></div>
           </div>
-          <div style="margin-top:12px"><button class="btn" id="w-go">Save alert</button></div>
+          <div style="margin-top:12px;display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn" id="w-go">Save alert</button>
+            <button class="btn ghost" id="w-live" type="button">Fetch live rain forecast</button></div>
+          <p class="muted">The live forecast (Open-Meteo) updates rainfall only. Alert levels stay as entered from the IMD bulletin.</p>
           <div id="w-out"></div>
         </div>
       </div>
