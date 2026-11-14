@@ -232,3 +232,13 @@ def test_four_eyes_and_broadcast_with_sms_fallback():
 
 def test_admin_requires_login():
     assert client.get("/api/admin/analytics").status_code == 401
+
+
+# ---------- Hindi in Latin letters (what English speech recognition returns for Hindi speech) ----------
+def test_romanized_hindi_is_understood():
+    from app.assistant import respond
+    r = respond("Kedarnath ka rasta khula hai kya")
+    assert (r["intent"], r["shrine"], r["language"]) == ("route", "kedarnath", "hi")
+    assert respond("bheed kitni hai badrinath mein")["intent"] == "crowd"
+    assert respond("Is the road to Kedarnath open?")["language"] == "en"       # plain English is left alone
+    assert respond("bachao, seene mein dard hai")["intent"] == "emergency"

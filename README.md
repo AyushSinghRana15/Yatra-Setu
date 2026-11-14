@@ -156,8 +156,9 @@ flowchart LR
 > - It works in **Chrome, Edge and Safari**, not in Firefox or some embedded browsers. The app detects this and shows a note instead of a broken button.
 > - It needs microphone permission and a secure page (`localhost` or HTTPS).
 > - Chrome sends the audio to its cloud speech service, so voice input needs a network and is not fully private or offline.
-> - **English (en-IN) and Hindi (hi-IN)** only. In *Auto* mode it listens in English; pick हिन्दी in the navbar to speak Hindi. Garhwali, Kumaoni and other Indian languages are planned through Bhashini speech recognition (ASR).
-> - Read-aloud uses the voices installed on the device, and some devices have no Hindi voice.
+> - **English (en-IN) and Hindi (hi-IN)** only. The listening sheet has an **English | हिन्दी** switch, and the choice is remembered.
+> - Place names the speech service often mishears ("cedar north" for Kedarnath) are corrected before the question is sent. Garhwali, Kumaoni and other Indian languages are planned through Bhashini speech recognition (ASR).
+> - Read-aloud picks the most natural voice installed on the device and speaks sentence by sentence, but quality still depends on the device. Some devices have no Hindi voice.
 
 <a id="architecture"></a>
 
@@ -385,6 +386,8 @@ app/
     index.html         navbar, home, assistant, crowd, route, health, alerts, about
     app.js             hash router, home live status, assistant, tools, About interactions
     icons.js           the site's SVG icon set; swaps emoji in any text for aligned icons
+    style.css          layout, components and accessibility rules
+    theme.css          the "Himalayan Dawn" look: colours, serif headings, glass header, hero
     voice.js           voice commands (SpeechRecognition) and read-aloud (SpeechSynthesis)
     charts.js          dependency-free canvas charts and SVG route map
     sw.js              offline cache (network-first, cache fallback)

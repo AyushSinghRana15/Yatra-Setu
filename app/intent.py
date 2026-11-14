@@ -56,6 +56,7 @@ TRAINING = {
 EMERGENCY_PATTERNS = [
     r"chest pain", r"heart attack", r"unconscious", r"not breathing", r"can'?t breathe", r"bleeding",
     r"accident", r"stuck|stranded|trapped", r"injur", r"help me", r"\bsos\b", r"emergency", r"lost my (child|son|daughter|mother|father)",
+    r"bachao", r"madad (karo|chahiye|kijiye)", r"seene? me(in)? dard", r"saans nahi", r"behosh", r"durghatna", r"(phas|fas|fans) ga[yi]",
     r"सीने में दर्द", r"बेहोश", r"सांस नहीं", r"दुर्घटना", r"फंस", r"घायल", r"मदद करो", r"बचाओ", r"आपात",
 ]
 

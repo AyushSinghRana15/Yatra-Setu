@@ -280,6 +280,12 @@ function renderBot(r, el) {
   if (r.intent === "crowd" && r.shrine) acts.push(`<button class="act" data-go="crowd" data-shrine="${r.shrine}">📊 ${esc(isHi() ? `${name} का पूरा अनुमान` : `Full forecast for ${name}`)}</button>`);
   if (r.intent === "route" && r.shrine) acts.push(`<button class="act" data-go="route" data-shrine="${r.shrine}">${tr("🛣️ Show on route map")}</button>`);
   if (r.intent === "health") acts.push(`<button class="act" data-go="health" ${r.shrine ? `data-shrine="${r.shrine}"` : ""}>${tr("❤️ Open health check")}</button>`);
+  // A crowd or road question with no shrine in it (often a misheard name): let the traveller pick one.
+  const pick = (r.intent === "crowd" || r.intent === "route") && !r.shrine ? SHRINES.map(s => {
+    const n = shrineName(s.id);
+    const q = r.intent === "crowd" ? (isHi() ? `इस हफ्ते ${n} में भीड़ कैसी है?` : `Is ${n} crowded this week?`) : (isHi() ? `क्या ${n} का रास्ता खुला है?` : `Is the road to ${n} open?`);
+    return `<button type="button" data-follow data-q="${esc(q)}">${esc(n)}</button>`;
+  }).join("") : "";
   const fl = isHi() ? FOLLOW_HI : FOLLOW;
   const follow = fl[r.intent] ? fl[r.intent](name || shrineName("kedarnath")) : [];
   el.classList.toggle("sos", !!r.sos);
@@ -290,11 +296,12 @@ function renderBot(r, el) {
       <button data-tool="speak" title="${tr("Read aloud")}">${tr("🔊 Listen")}</button><button data-tool="copy" title="${tr("Copy answer")}">${tr("📋 Copy")}</button>
       ${acts.join("")}
     </div>
-    ${follow.length ? `<div class="quick" style="margin:8px 0 0">${follow.map(f => `<button type="button" data-follow>${esc(f)}</button>`).join("")}</div>` : ""}`;
+    ${pick ? `<div class="pick"><b>${isHi() ? "किस धाम के बारे में?" : "Which shrine do you mean?"}</b><div class="quick">${pick}</div></div>` : ""}
+    ${follow.length && !pick ? `<div class="quick" style="margin:8px 0 0">${follow.map(f => `<button type="button" data-follow>${esc(f)}</button>`).join("")}</div>` : ""}`;
   el.querySelector('[data-tool="speak"]').onclick = () => window.YSVoice && YSVoice.speak(r.answer, r.language);
   el.querySelector('[data-tool="copy"]').onclick = () => navigator.clipboard?.writeText(r.answer).then(() => toast("Answer copied"), () => toast("Copy is not available here"));
   el.querySelectorAll("[data-go]").forEach(b => b.onclick = () => goto(b.dataset.go, b.dataset.shrine ? { shrine: b.dataset.shrine } : null));
-  el.querySelectorAll("[data-follow]").forEach(b => b.onclick = () => ask(b.textContent));
+  el.querySelectorAll("[data-follow]").forEach(b => b.onclick = () => ask(b.dataset.q || b.textContent));
 }
 
 function renderHistory() {

@@ -3,7 +3,7 @@
   "short_name": "YatraSetu",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f7f8",
-  "theme_color": "#0e2a33",
+  "background_color": "#fbf5ec",
+  "theme_color": "#17112e",
   "description": "Multilingual safe-travel and crowd advisory assistant for Uttarakhand"
 }

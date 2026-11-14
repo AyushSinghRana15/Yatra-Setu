@@ -12,7 +12,7 @@ from .config import CONTENT_THRESHOLD, RETRIEVAL_THRESHOLD, TOP_K
 from .forecast import forecaster
 from .intent import classifier
 from .knowledge_base import kb
-from .language import LANG_NAMES, bhashini, detect_language
+from .language import LANG_NAMES, bhashini, detect_language, romanized_hindi
 from .risk import trip_risk
 
 T = {  # UI strings for live-data and fallback messages
@@ -80,6 +80,11 @@ def respond(text: str, lang_override: str | None = None):
     lang = lang_override or detect_language(text)
     work_lang, note = lang, ""
     query = text
+    gloss = romanized_hindi(text) if lang == "en" else None
+    if gloss:                                      # Hindi in Latin letters: understand it, and answer in Hindi
+        query = f"{text} {gloss}"
+        if not lang_override:
+            lang = work_lang = "hi"
     if lang not in ("en", "hi"):
         if bhashini.enabled:
             query = bhashini.translate(text, lang, "en")

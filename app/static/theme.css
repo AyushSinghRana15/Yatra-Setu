@@ -1,0 +1,111 @@
+/* Himalayan Dawn: the site's look, layered on the structural rules in style.css.
+   An indigo night sky fading into a saffron sunrise, an editorial serif for headings, a floating glass
+   header, a cinematic hero and soft, deep cards. Everything here is cosmetic: layout hooks, features and
+   accessibility (rem type, contrast, 48px targets, focus rings) come from style.css unchanged. */
+
+/* ---------- colours and type ---------- */
+:root {
+  --display: "Fraunces", "Noto Sans Devanagari", Georgia, serif;
+  --bg: #fbf5ec; --tint: #f5eee3; --rule: #e3dccf; --night: #17112e; --night-2: #251c47;
+  --teal: #3a2c78; --teal-2: #5443a8; --teal-l: #ece8fb; --saff: #b4480a; --saff-2: #e8791c; --saff-l: #fdeedd; --gold: #f6b94a;
+  --hero-a: rgba(23, 17, 46, .93); --hero-b: rgba(23, 17, 46, .58); --hero-c: rgba(232, 121, 28, .42);
+}
+
+/* ---------- header, hero, cards ---------- */
+html { scroll-padding-top: 9rem; }
+html ::selection { background: var(--gold); color: var(--night); }
+
+/* floating glass header that the hero slides under */
+html .nav { top: .75rem; margin: .75rem auto 0; width: min(80rem, calc(100% - 1.5rem)); border-radius: 1.5rem; padding: .55rem .9rem .55rem 1rem;
+  background: color-mix(in srgb, var(--night) 80%, transparent); backdrop-filter: blur(18px) saturate(1.5); -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, .16); box-shadow: 0 14px 40px rgba(0, 0, 0, .26); }
+html .hero, html .banner { margin-top: calc(-1 * var(--nav-h, 7rem) - .75rem); }
+html .hero-inner { padding-top: calc(var(--nav-h, 7rem) + 4.5rem); padding-bottom: 9rem; z-index: 2; }
+html .banner { padding-top: calc(var(--nav-h, 7rem) + 3.25rem); padding-bottom: 6.5rem; overflow: hidden;
+  background: linear-gradient(100deg, color-mix(in srgb, var(--night) 95%, transparent), color-mix(in srgb, var(--night) 72%, transparent) 55%, color-mix(in srgb, var(--night) 34%, transparent)),
+              var(--img) center 40% / cover, var(--night); }
+html .banner h1 { font-size: clamp(2rem, 4.6vw, 3.2rem); letter-spacing: -.015em; }
+html .nav-links a { border-radius: 999px; border-bottom-width: 0; }
+html .nav-links a.active { box-shadow: inset 0 -3px 0 var(--gold); }
+html .lang, html .textsize, html .sos-pill { border-radius: 999px; }
+@media (min-width: 1280px) {
+  html:not([data-size="1"]):not([data-size="2"]) .nav-links { order: 0; flex: 1 1 auto; padding-top: 0; border-top: 0; gap: 0; }
+  html:not([data-size="1"]):not([data-size="2"]) .nav-links a { padding: .4rem .75rem; font-size: .975rem; }
+  html:not([data-size="1"]):not([data-size="2"]) .nav-actions { margin-left: 0; }
+  html:not([data-size="1"]):not([data-size="2"]) .officials { display: none; }
+}
+@media (min-width: 1280px) and (max-width: 1539px) { html:not([data-size="1"]):not([data-size="2"]) .nav-links a .ic { display: none; } }
+@media (max-width: 1000px) {
+  html .nav-links { top: calc(var(--nav-h, 4rem) + 1.25rem); left: .75rem; right: .75rem; border-radius: 1.25rem; border: 1px solid rgba(255, 255, 255, .16); }
+  html .nav-links a { border-radius: .9rem; }
+}
+
+/* cinematic hero: glowing sun, layered ridgeline, big headline */
+html .hero { min-height: min(58rem, 100vh); background: linear-gradient(180deg, var(--hero-a) 0%, var(--hero-b) 44%, var(--hero-c) 100%), var(--img) center 35% / cover no-repeat, var(--night); }
+html .hero::before { content: ""; position: absolute; width: 48rem; height: 48rem; right: -12rem; top: -6rem; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--gold) 60%, transparent), color-mix(in srgb, var(--saff-2) 22%, transparent) 55%, transparent);
+  animation: sunGlow 9s ease-in-out infinite alternate; }
+html .hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 15rem; pointer-events: none; z-index: 1; opacity: .5; background: var(--night);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220' preserveAspectRatio='none'%3E%3Cpath d='M0 220V120l110-50 90 40 130-90 120 80 100-45 140 75 110-95 150 85 120-60 130 70 140-80 100 45v125z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 220' preserveAspectRatio='none'%3E%3Cpath d='M0 220V120l110-50 90 40 130-90 120 80 100-45 140 75 110-95 150 85 120-60 130 70 140-80 100 45v125z'/%3E%3C/svg%3E") bottom / 100% 100% no-repeat; }
+html .ridge { z-index: 2; height: 4.5rem; } html .scroll-cue { z-index: 3; }
+html .hero h1 { font-size: clamp(2.4rem, 6.2vw, 4.7rem); letter-spacing: -.025em; line-height: 1.04; }
+html .grad { background: linear-gradient(92deg, var(--gold), var(--saff-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html .lead { font-size: clamp(1.1rem, 1.6vw, 1.3rem); }
+html .hero-ask { border-radius: 999px; padding: .5rem .5rem .5rem .9rem; box-shadow: 0 0 0 .4rem rgba(255, 255, 255, .16), 0 24px 60px -12px rgba(0, 0, 0, .5); }
+html .hero-ask input { border-radius: 999px; }
+@media (max-width: 560px) { html .hero-ask { border-radius: 1.5rem; padding: .6rem; } }
+html .hero-chips button { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+html .glass { background: rgba(255, 255, 255, .12); border-color: rgba(255, 255, 255, .34); border-radius: 1.4rem; padding: 1.15rem 1.3rem;
+  backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); box-shadow: 0 24px 50px -14px rgba(0, 0, 0, .45); }
+html .glass > span { background: linear-gradient(135deg, var(--saff-2), var(--gold)); color: #fff; }
+@media (min-width: 1001px) { html .glass.f1 { margin-right: 2.5rem; } html .glass.f2 { margin-left: 2.5rem; } html .glass.f3 { margin-right: 1.25rem; margin-left: 1.25rem; } }
+
+/* soft, deep cards and pill buttons */
+html .card, html .feature, html .kpi, html .emergency { border-radius: 1.5rem; }
+html .card, html .feature { border-color: color-mix(in srgb, var(--night) 9%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--night) 5%, transparent), 0 18px 40px -16px color-mix(in srgb, var(--night) 22%, transparent); }
+html button.btn, html a.btn, html .shrine-card .acts button, html .msg-tools button { border-radius: 999px; }
+html .btn.saff { background: linear-gradient(135deg, var(--saff-2), var(--saff)) !important; box-shadow: 0 10px 24px -8px color-mix(in srgb, var(--saff-2) 80%, transparent); }
+html input, html select, html textarea { border-radius: .9rem; }
+html .section-head h2 { font-size: clamp(1.8rem, 3.6vw, 2.75rem); letter-spacing: -.02em; }
+html .card h2 { font-size: 1.35rem; }
+html .lift { margin-top: -3.75rem; }
+html .msg.user { background: linear-gradient(135deg, var(--teal), var(--teal-2)); }
+
+/* home: bento feature grid, richer bands */
+@media (min-width: 1001px) {
+  html .feature-grid { grid-template-columns: repeat(4, 1fr); }
+  html .feature:nth-child(1), html .feature:nth-child(6) { grid-column: span 2; }
+}
+html .feature { transition: transform .3s var(--ease), box-shadow .3s, border-color .3s, opacity .6s var(--ease); }
+html .feature.in:hover { transform: translateY(-.3rem); }
+html .feature:nth-child(1) { background: radial-gradient(28rem 14rem at 100% 0%, color-mix(in srgb, var(--gold) 38%, transparent), transparent), linear-gradient(135deg, var(--night), var(--teal)); color: #fff; border-color: transparent; }
+html .feature:nth-child(6) { background: radial-gradient(26rem 14rem at 100% 0%, rgba(255, 170, 150, .35), transparent), linear-gradient(135deg, #7a1410, var(--red)); color: #fff; border-color: transparent; }
+html .feature:nth-child(1) h3, html .feature:nth-child(6) h3 { color: #fff; font-size: 1.5rem; }
+html .feature:nth-child(1) p, html .feature:nth-child(6) p { color: rgba(255, 255, 255, .88); font-size: 1.05rem; }
+html .feature:nth-child(1) .fi, html .feature:nth-child(6) .fi { background: rgba(255, 255, 255, .16); color: #fff; }
+html .feature:nth-child(1) .go, html .feature:nth-child(6) .go { color: var(--gold); }
+html .why { background: radial-gradient(50rem 26rem at 85% 0%, color-mix(in srgb, var(--saff-2) 26%, transparent), transparent), linear-gradient(180deg, var(--night), var(--night-2)); }
+html .why-card { border-radius: 1.5rem; background: rgba(255, 255, 255, .07); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+html .why-card:hover { transform: translateY(-.3rem); }
+html .shrine-card { border-radius: 1.5rem; min-height: 22rem; }
+html .shrine-card::after { background: linear-gradient(180deg, transparent 8%, color-mix(in srgb, var(--night) 96%, transparent) 66%); }
+html .stats-band { background: radial-gradient(44rem 18rem at 12% 0%, color-mix(in srgb, var(--saff-2) 34%, transparent), transparent), radial-gradient(40rem 18rem at 92% 100%, color-mix(in srgb, var(--teal-2) 55%, transparent), transparent), var(--night); }
+html .stat b { background: linear-gradient(92deg, var(--gold), var(--saff-2)); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: clamp(2.4rem, 4.6vw, 3.6rem); }
+html .site-footer { border-radius: 2rem 2rem 0 0; margin-top: 1rem; }
+html .fab { border: 0; box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--night) 60%, transparent); }
+html .fab.mic { background: linear-gradient(135deg, var(--saff-2), var(--saff)); box-shadow: 0 12px 28px -6px color-mix(in srgb, var(--saff-2) 85%, transparent); }
+@media (max-width: 760px) {
+  html .tabbar { left: .6rem; right: .6rem; bottom: calc(.6rem + env(safe-area-inset-bottom)); border-radius: 1.4rem; border: 1px solid color-mix(in srgb, var(--night) 14%, transparent); overflow: hidden;
+    padding-bottom: 0; background: rgba(255, 255, 255, .94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); box-shadow: 0 14px 34px -8px color-mix(in srgb, var(--night) 40%, transparent); }
+  html .fab-group { bottom: calc(5.6rem + env(safe-area-inset-bottom)); }
+  html .site-footer { padding-bottom: 7rem; }
+}
+@keyframes sunGlow { from { transform: translate(0, 0) scale(1); opacity: .75; } to { transform: translate(-2rem, 1.5rem) scale(1.12); opacity: 1; } }
+/* phones: the logo alone identifies the site, so the controls keep their full size; roomier cards */
+@media (max-width: 560px) {
+  html .brand-text { display: none; }
+  html .card { padding: 1.1rem; } html .chat { padding: .6rem; } html .msg { max-width: 95%; }
+  html .banner { padding-bottom: 5.5rem; }
+}
