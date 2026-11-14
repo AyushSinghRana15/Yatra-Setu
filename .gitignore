@@ -26,3 +26,6 @@ __pycache__/
 ~$*.docx
 ~$*.pptx
 ~$*.xlsx
+
+# Research paper drafts (kept local)
+paper/

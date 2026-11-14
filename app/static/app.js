@@ -78,7 +78,7 @@ function show(page, params = new URLSearchParams()) {
   if (changed) {
     $$(".page").forEach(p => p.classList.remove("active"));
     $("#page-" + page).classList.add("active");
-    $$(".nav-links a[data-page]").forEach(a => { const on = a.dataset.page === page; a.classList.toggle("active", on);
+    $$(".nav-links a[data-page], .tabbar a[data-page]").forEach(a => { const on = a.dataset.page === page; a.classList.toggle("active", on);
       on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); });
     document.body.dataset.page = page;
     document.title = `${$("#page-" + page).dataset.title} · YatraSetu AI`;
@@ -106,6 +106,20 @@ function flashSos() {
   c.scrollIntoView({ behavior: "smooth", block: "center" });
   c.classList.remove("flash"); void c.offsetWidth; c.classList.add("flash");
 }
+
+// skip link, header height (the phone menu opens just below it) and the text-size control
+$(".skip").onclick = e => { e.preventDefault(); const m = $("#pages"); m.tabIndex = -1; m.focus(); m.scrollIntoView(); };
+const syncNavH = () => document.documentElement.style.setProperty("--nav-h", $("#nav").offsetHeight + "px");
+window.addEventListener("resize", syncNavH);
+function setTextSize(n, announce) {
+  n = Math.max(0, Math.min(2, +n || 0));
+  document.documentElement.dataset.size = n; store.set("size", n);
+  $$(".textsize button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.size === n)));
+  syncNavH(); window.dispatchEvent(new Event("resize"));   // charts redraw at the new size
+  if (announce) toast(["Text size: normal", "Text size: large", "Text size: largest"][n]);
+}
+$$(".textsize button").forEach(b => b.onclick = () => setTextSize(b.dataset.size, true));
+setTextSize(store.get("size", 0));
 
 // scroll reveal
 const io = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
@@ -173,7 +187,7 @@ function renderWhy() {
     return `<button class="why-card${shown ? " in" : ""}" data-go="${w.go}" style="--d:${(k % 3) * 0.12 + Math.floor(k / 3) * 0.18}s;--fd:${6 + (k % 3)}s;--fo:${-k * 0.9}s">
       <div class="wi">${w.i}</div><h3>${esc(t)}</h3>
       <div class="vs"><div class="old">${esc(old)}</div><div class="new">${esc(neu)}</div></div>
-      <div class="peek">${esc(tr("Hover or tap to compare →"))}</div>
+      <div class="peek">${esc(tr("Open →"))}</div>
     </button>`;
   }).join("");
   bindWhy();
@@ -181,10 +195,7 @@ function renderWhy() {
 const bindWhy = () => $$(".why-card").forEach(c => {
   c.addEventListener("pointermove", e => { const r = c.getBoundingClientRect();
     c.style.setProperty("--mx", `${e.clientX - r.left}px`); c.style.setProperty("--my", `${e.clientY - r.top}px`); });
-  c.onclick = () => {  // first tap on touch screens reveals the comparison, second tap opens the feature
-    if (matchMedia("(hover: none)").matches && !c.classList.contains("open")) { c.classList.add("open"); return; }
-    goto(c.dataset.go);
-  };
+  c.onclick = () => goto(c.dataset.go);
 });
 renderWhy();
 

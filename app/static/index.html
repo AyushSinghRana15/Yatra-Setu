@@ -13,10 +13,8 @@
   <link rel="manifest" href="/static/manifest.json">
 </head>
 <body class="site">
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="2.5" width="6" height="11.5" rx="3"/><path d="M5.5 10.5a6.5 6.5 0 0 0 13 0M12 17v4.5M8.5 21.5h7"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20.5 11.5a8 8 0 0 1-11.7 7.1L3.5 20l1.4-4.9A8 8 0 1 1 20.5 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></symbol>
-</svg>
+<script src="/static/icons.js"></script>
+<a class="skip" href="#pages">Skip to main content</a>
 
 <!-- ================= NAVBAR ================= -->
 <header class="nav" id="nav">
@@ -33,11 +31,13 @@
     <a href="#alerts" data-page="alerts">🔔 Alerts</a>
     <a href="#about" data-page="about">🧭 About</a>
     <a href="/admin" class="only-mobile">🏛️ Officials' dashboard</a>
+    <div class="textsize-row"><span>Text size</span><div class="textsize" role="group" aria-label="Text size"><button type="button" data-size="0" title="Normal text" aria-label="Normal text">A</button><button type="button" data-size="1" title="Large text" aria-label="Large text">A</button><button type="button" data-size="2" title="Largest text" aria-label="Largest text">A</button></div></div>
   </nav>
   <div class="nav-actions">
     <select id="lang" class="lang" aria-label="Answer language" title="Answer & voice language">
       <option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option>
     </select>
+    <div class="textsize only-desktop" role="group" aria-label="Text size"><button type="button" data-size="0" title="Normal text" aria-label="Normal text">A</button><button type="button" data-size="1" title="Large text" aria-label="Large text">A</button><button type="button" data-size="2" title="Largest text" aria-label="Largest text">A</button></div>
     <button class="icon-btn mic" id="nav-mic" title="Voice command" aria-label="Start voice command"><svg class="ic" aria-hidden="true"><use href="#i-mic"/></svg></button>
     <a class="sos-pill" href="#alerts" data-sos title="Emergency SOS">SOS</a>
     <a class="officials only-desktop" href="/admin">Officials →</a>
@@ -64,7 +64,7 @@
         <div class="hero-chips reveal" id="hero-chips"></div>
       </div>
       <div class="hero-float" aria-hidden="true">
-        <div class="glass float f1"><span>🟢</span><div><b>Live route risk</b><small>IMD + road status + terrain</small></div></div>
+        <div class="glass float f1"><span>🛣️</span><div><b>Live route risk</b><small>IMD + road status + terrain</small></div></div>
         <div class="glass float f2"><span>📈</span><div><b>7-day crowd forecast</b><small>vs. carrying capacity</small></div></div>
         <div class="glass float f3"><span>🗣️</span><div><b>बोलकर पूछें</b><small>Voice in Hindi &amp; English</small></div></div>
       </div>
@@ -81,7 +81,7 @@
       <div class="section-head light reveal">
         <span class="eyebrow">Why YatraSetu?</span>
         <h2>Better than the traditional yatra website</h2>
-        <p>Traditional portals publish static notices and PDFs. YatraSetu turns them into live, personal answers. Hover or tap a card.</p>
+        <p>Traditional portals publish static notices and PDFs. YatraSetu turns them into live, personal answers. Tap a card to open that feature.</p>
       </div>
       <div class="why-grid" id="why-grid"></div>
     </div>
@@ -539,11 +539,20 @@
 <footer class="site-footer">
   <div class="wrap foot">
     <div><b>YatraSetu AI</b><p>Multilingual, voice-enabled safe-travel and crowd advisory assistant for Uttarakhand.</p></div>
-    <div><b>Explore</b><a href="#assistant">Assistant</a><a href="#crowd">Crowd forecast</a><a href="#route">Route risk</a><a href="#about">About</a></div>
+    <div><b>Explore</b><a href="#assistant">Assistant</a><a href="#crowd">Crowd forecast</a><a href="#route">Route risk</a><a href="#health">Health check</a><a href="#about">About</a><a href="/admin">Officials' dashboard</a></div>
     <div><b>Emergency</b><a href="tel:112">112 Emergency</a><a href="tel:108">108 Ambulance</a><a href="tel:1930">1930 Cyber fraud</a></div>
   </div>
   <p class="fine">Prototype · Demo data, verify with official sources · Photos: Wikimedia Commons (see About)</p>
 </footer>
+
+<!-- phones: bottom bar with the five most-used destinations -->
+<nav class="tabbar" aria-label="Quick links">
+  <a href="#home" data-page="home">🏠<span>Home</span></a>
+  <a href="#assistant" data-page="assistant">💬<span>Ask</span></a>
+  <a href="#crowd" data-page="crowd">📊<span>Crowd</span></a>
+  <a href="#route" data-page="route">🛣️<span>Route</span></a>
+  <a href="#alerts" data-page="alerts" data-sos class="tab-sos">🚨<span>SOS</span></a>
+</nav>
 
 <!-- floating action buttons -->
 <div class="fab-group">

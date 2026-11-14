@@ -167,6 +167,11 @@
     "The end date must be on or after the start date.": "समाप्ति तिथि आरंभ तिथि के बाद या उसी दिन होनी चाहिए।",
     "Please tick the consent box so we can store your trip for alerts.": "कृपया सहमति बॉक्स पर निशान लगाएँ ताकि अलर्ट के लिए आपकी यात्रा सहेजी जा सके।",
     "Enter your location or tap Locate me. You can still call 112 now.": "अपनी लोकेशन लिखें या 'लोकेट मी' दबाएँ। आप अभी भी 112 पर कॉल कर सकते हैं।",
+    "Skip to main content": "मुख्य सामग्री पर जाएँ", "Text size": "अक्षर का आकार", "Home": "होम", "Ask": "पूछें", "Crowd": "भीड़",
+    "Health check": "स्वास्थ्य जाँच", "Officials' dashboard": "अधिकारी डैशबोर्ड",
+    "Text size: normal": "अक्षर का आकार: सामान्य", "Text size: large": "अक्षर का आकार: बड़ा", "Text size: largest": "अक्षर का आकार: सबसे बड़ा",
+    "Traditional portals publish static notices and PDFs. YatraSetu turns them into live, personal answers. Tap a card to open that feature.":
+      "पारंपरिक पोर्टल स्थिर सूचनाएँ और PDF देते हैं। यात्रासेतु उन्हें लाइव, व्यक्तिगत उत्तरों में बदलता है। कोई कार्ड टैप करके वह सुविधा खोलें।",
     "Answer copied": "उत्तर कॉपी हो गया", "Chat cleared": "बातचीत साफ हो गई",
   };
   // Dynamic content that is not a straight lookup.
@@ -189,10 +194,22 @@
   function apply(next) {
     lang = next === "hi" ? "hi" : "en";
     document.documentElement.lang = lang;
+    // text that holds an icon lives in <span class="icz" data-src> (icons.js): translate it through the wrapper
+    if (window.YSIcons) {
+      YSIcons.iconize(document.body);
+      document.querySelectorAll(".icz").forEach(s => {
+        if (s.closest(SKIP)) return;
+        const en = s.dataset.en ?? s.dataset.src, hi = HI[norm(en)];
+        if (!hi) return;
+        s.dataset.en = en;
+        const [, lead, , trail] = en.match(/^(\s*)([\s\S]*?)(\s*)$/);
+        YSIcons.render(s, lang === "hi" ? lead + hi + trail : en);
+      });
+    }
     const walk = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
     let n;
     while ((n = walk.nextNode())) {
-      if (!n.parentElement || n.parentElement.closest(SKIP)) continue;
+      if (!n.parentElement || n.parentElement.closest(SKIP) || n.parentElement.closest(".icz")) continue;
       const en = original.has(n) ? original.get(n) : n.nodeValue;
       const hi = HI[norm(en)];
       if (!hi) continue;

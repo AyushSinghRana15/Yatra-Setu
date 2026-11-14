@@ -7,7 +7,7 @@ function setupCanvas(canvas) {
   const w = canvas.clientWidth, h = canvas.clientHeight;
   canvas.width = w * dpr; canvas.height = h * dpr;
   const ctx = canvas.getContext("2d"); ctx.scale(dpr, dpr);
-  ctx.clearRect(0, 0, w, h); ctx.font = "12px system-ui, sans-serif";
+  ctx.clearRect(0, 0, w, h); ctx.font = "14px system-ui, sans-serif";
   return { ctx, w, h };
 }
 
@@ -97,19 +97,19 @@ function routeMap(svg, data, highlight = [], opts = {}) {
       hit.addEventListener("mouseenter", () => line.setAttribute("stroke-width", 9));
       hit.addEventListener("mouseleave", () => line.setAttribute("stroke-width", hl ? 7 : 3));
     }
-    if (s.status !== "Open") el("text", { x: (a.x + b.x) / 2 + 6, y: (a.y + b.y) / 2 - 6, fill: COLORS.red, "font-size": 12, "font-weight": 700 }, s.status.toUpperCase());
+    if (s.status !== "Open") el("text", { x: (a.x + b.x) / 2 + 6, y: (a.y + b.y) / 2 - 6, fill: COLORS.red, "font-size": 15, "font-weight": 700 }, s.status.toUpperCase());
   });
   Object.entries(data.nodes).forEach(([id, n]) => {
     el("circle", { cx: n.x, cy: n.y, r: 6, fill: "#fff", stroke: COLORS.teal, "stroke-width": 2.5 });
     const right = n.x > 760;
-    el("text", { x: right ? n.x - 9 : n.x + 9, y: n.y + 4, "font-size": 12.5, fill: COLORS.ink,
+    el("text", { x: right ? n.x - 9 : n.x + 9, y: n.y + 4, "font-size": 17, "font-weight": 600, fill: COLORS.ink,
       "text-anchor": right ? "end" : "start" }, n.name);
   });
   let lx = 20;
   ["Green", "Yellow", "Orange", "Red"].forEach(l => {
     el("rect", { x: lx, y: 445, width: 22, height: 6, fill: LEVEL_COLORS[l], rx: 3 });
-    el("text", { x: lx + 28, y: 452, "font-size": 12, fill: COLORS.ink }, l); lx += 90;
+    el("text", { x: lx + 28, y: 453, "font-size": 16, fill: COLORS.ink }, l); lx += 112;
   });
   el("line", { x1: lx, y1: 448, x2: lx + 24, y2: 448, stroke: COLORS.grey, "stroke-width": 4, "stroke-dasharray": "2 6" });
-  el("text", { x: lx + 30, y: 452, "font-size": 12, fill: COLORS.ink }, "Trek (on foot)");
+  el("text", { x: lx + 30, y: 453, "font-size": 16, fill: COLORS.ink }, "Trek (on foot)");
 }

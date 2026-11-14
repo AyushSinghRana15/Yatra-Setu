@@ -119,7 +119,11 @@ flowchart LR
 - 📈 Crowd answers include an inline 7-day mini chart; the side panel ticks off which pipeline steps were used.
 - 💾 The conversation is kept in the browser between visits (cleared with 🗑️ Clear).
 - 🗺️ Live shrine cards on the home page show today's crowd band and route risk for all five shrines.
-- 📱 Responsive down to phone width, with a hamburger menu, large tap targets and `prefers-reduced-motion` support.
+- 📱 Responsive down to phone width. Phones get a labelled bottom bar (Home, Ask, Crowd, Route, SOS) and a menu for the rest.
+- 🔠 Built for older travellers too: a three-step **text size** control (A A A) that scales the whole site, large 48px touch targets,
+  high-contrast text, visible keyboard focus, a skip link, and risk levels shown as words as well as colours.
+- 🎨 One consistent SVG icon set (`icons.js`) instead of emoji, so icons line up and look the same on every device.
+- 🌙 Calm motion, with `prefers-reduced-motion` and `prefers-contrast` support.
 
 <a id="voice"></a>
 
@@ -380,6 +384,7 @@ app/
   static/            traveller website and officials' dashboard (HTML/CSS/JS, no framework)
     index.html         navbar, home, assistant, crowd, route, health, alerts, about
     app.js             hash router, home live status, assistant, tools, About interactions
+    icons.js           the site's SVG icon set; swaps emoji in any text for aligned icons
     voice.js           voice commands (SpeechRecognition) and read-aloud (SpeechSynthesis)
     charts.js          dependency-free canvas charts and SVG route map
     sw.js              offline cache (network-first, cache fallback)
